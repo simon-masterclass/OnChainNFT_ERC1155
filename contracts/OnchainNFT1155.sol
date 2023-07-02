@@ -9,20 +9,21 @@ import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol";
 contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
     uint256 public constant AIMO = 0;
     uint256 public constant maxAIMOsupply = 10000;
-
     uint256 public constant bravoMAXsuppy = 100;
+
+    uint256[] public bravoIDs;
+    uint256[] public bravoAmounts;
+    string[] public bravoCodeNames;
 
     constructor() ERC1155("") {
         _mint(msg.sender, AIMO, 10 ** 4, "");
     }
 
-    function mint(
-        address account,
-        uint256 id,
-        uint256 amount,
-        bytes memory data
-    ) public onlyOwner {
-        _mint(account, id, amount, data);
+    function mint(uint256 id, uint256 amount, string memory codeName) public {
+        _mint(msg.sender, id, amount, "");
+        bravoIDs.push(id);
+        bravoAmounts.push(amount);
+        bravoCodeNames.push(codeName);
     }
 
     function mintBatch(
