@@ -7,13 +7,15 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol";
 
 contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
+    //$AIM0 (fungible) token variables
     address public $AIM0wner;
     uint256 public constant $AIM0 = 0;
     uint256 public constant $AIM0bonus = 100;
     uint256 public constant max$AIM0supply = 10 ** 6; //max supply of $AIM0 for this Bravo Company collection is 1 million
     uint256 public minted$AIMO = 0;
-    uint256 public constant maxBRAVOsupply = 100;
 
+    //Bravo Company NFT variables
+    uint256 public constant maxBRAVOsupply = 100;
     uint256[] public bravoIDs;
     address[] public bravoAddresses;
     string[] public bravoCodeNames;
@@ -53,7 +55,7 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
         _mint(msg.sender, newID, 1, "");
         bravoIDs.push(newID);
         bravoCodeNames.push(codeName);
-        bravoMintedTF[msg.sender] == true;
+        bravoMintedTF[msg.sender] = true;
 
         //mint 100 rounds of $AIM0 to the new recruit as enlistment bonus
         _mint(msg.sender, $AIM0, $AIM0bonus, "");
