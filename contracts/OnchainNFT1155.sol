@@ -5,8 +5,12 @@ import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Burnable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol";
+import "./Base64.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 
 contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
+    using Base64 for bytes;
+    using Strings for uint256;
     //$AIM0 (fungible) token variables
     address public $AIM0wner;
     uint256 public constant $AIM0 = 0;
@@ -62,16 +66,68 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
         minted$AIMO += $AIM0bonus;
     }
 
-    function uri(uint256 tokenId) public view override returns (string memory) {
+    function randomNum(
+        uint256 _modulus,
+        uint256 _seed,
+        uint256 _salt
+    ) internal view returns (uint256) {
+        uint256 randomNumber = uint256(
+            keccak256(
+                abi.encodePacked(block.timestamp, msg.sender, _salt, _seed)
+            )
+        );
+        return randomNumber % _modulus;
+    }
+
+    function buildImage(
+        string memory _nameC0
+    ) internal view returns (string memory) {
         return
-            (tokenId == $AIM0)
-                ? "https://onchainnft.com/aim0"
-                : string(
+            Base64.encode(
+                bytes(
                     abi.encodePacked(
-                        "https://onchainnft.com/",
-                        bravoCodeNames[tokenId]
+                        '<svg width="555" height="555" xmlns="http://www.w3.org/2000/svg">',
+                        '<rect stroke="#000" height="555" width="555" y="0" x="0" fill="hsl(',
+                        randomNum(361, 3, 4).toString(),
+                        ',100%,34%)" />',
+                        '<text dominant-baseline="middle" text-anchor="middle" font-family="Impact" font-size="111" y="34%" x="50%" stroke="#000000" fill="#ffffff">ZERO ARMY</text>',
+                        '<text dominant-baseline="middle" text-anchor="middle" font-family="Courier" font-size="55" stroke-width="2" y="50%" x="50%" stroke="#a10000" fill="#ffffff">BRAVO COMPANY</text>',
+                        '<text dominant-baseline="middle" text-anchor="middle" font-family="Courier new" font-size="40" stroke-width="2" y="69%" x="50%" stroke="#ffffff" fill="#ffffff">',
+                        _nameC0,
+                        "</text>",
+                        '<text dominant-baseline="middle" text-anchor="middle" font-family="Courier new" font-size="22" y="88%" x="50%" fill="#ffffff"> HOLDING THE LINE </text>',
+                        "</svg>"
                     )
-                );
+                )
+            );
+    }
+
+    function uri(uint256 tokenId) public view override returns (string memory) {
+        require(
+            exists(tokenId),
+            "ERC721Metadata: URI query for nonexistent token"
+        );
+
+        return
+            string(
+                abi.encodePacked(
+                    "data:application/json;base64,",
+                    Base64.encode(
+                        bytes(
+                            abi.encodePacked(
+                                '{"name":"',
+                                "Bravo Company",
+                                '", "description":"',
+                                "Zero Army founding team members. Go to zeroarmy.org for details.",
+                                '", "image":"',
+                                "data:image/svg+xml;base64,",
+                                buildImage(bravoCodeNames[tokenId]),
+                                '"}'
+                            )
+                        )
+                    )
+                )
+            );
     }
 
     function enlistBravo(address bravoAddress) public onlyOwner {
