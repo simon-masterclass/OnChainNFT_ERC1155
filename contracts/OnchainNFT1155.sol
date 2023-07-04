@@ -36,15 +36,6 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
         _mint(msg.sender, $AIM0, $AIM0bonus, "");
     }
 
-    function mintBatch(
-        address to,
-        uint256[] memory ids,
-        uint256[] memory amounts,
-        bytes memory data
-    ) public onlyOwner {
-        _mintBatch(to, ids, amounts, data);
-    }
-
     // The following functions are overrides required by Solidity.
 
     function _beforeTokenTransfer(
