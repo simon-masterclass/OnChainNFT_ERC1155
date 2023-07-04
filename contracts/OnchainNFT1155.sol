@@ -18,21 +18,21 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
 
     constructor() ERC1155("") {
         $AIM0wner = msg.sender;
+        //mint Max supply of $AIM0 minus 10000 to be minted by recruits later (for gas efficiency)
         _mint($AIM0wner, $AIM0, max$AIM0supply - 10000, "");
         bravoIDs.push($AIM0);
-        bravoCodeNames.push("$AIMO");
+        bravoCodeNames.push("$AIM0");
     }
 
     function mint(string memory codeName) public {
         uint256 newID = bravoIDs.length;
         require(newID <= maxBRAVOsupply, "Max supply of Bravo NFTs reached");
         require(totalSupply(0) < max$AIM0supply, "Max supply of $AIM0 reached");
-        //mint new soul bound NFT for Bravo company recruit with code name
+        //mint new NFT for Bravo company recruit with code name
         _mint(msg.sender, newID, 1, "");
         bravoIDs.push(newID);
         bravoCodeNames.push(codeName);
-        //transfer 100 rounds of AIM0 to the new recruit as enlistment bonus
-        //_safeTransferFrom(AIM0wner, msg.sender, AIM0, AIM0bonus, "");
+        //mint 100 rounds of $AIM0 to the new recruit as enlistment bonus
         _mint(msg.sender, $AIM0, $AIM0bonus, "");
     }
 
