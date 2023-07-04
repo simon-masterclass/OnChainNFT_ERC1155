@@ -5,8 +5,8 @@ import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Burnable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol";
-import "./Base64.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
+import "./Base64.sol";
 
 contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
     using Base64 for bytes;
@@ -25,6 +25,7 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
     string[] public bravoCodeNames;
 
     mapping(address => bool) private bravoMintedTF;
+    mapping(uint256 => address) private bravoIDindex;
 
     constructor() ERC1155("") {
         $AIM0wner = msg.sender;
@@ -33,6 +34,7 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
         _mint($AIM0wner, $AIM0, minted$AIMO, "");
         bravoIDs.push($AIM0);
         bravoCodeNames.push("$AIM0");
+        bravoIDindex[$AIM0] = $AIM0wner;
     }
 
     function mint(string memory codeName) public {
@@ -60,6 +62,7 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
         bravoIDs.push(newID);
         bravoCodeNames.push(codeName);
         bravoMintedTF[msg.sender] = true;
+        bravoIDindex[newID] = msg.sender;
 
         //mint 100 rounds of $AIM0 to the new recruit as enlistment bonus
         _mint(msg.sender, $AIM0, $AIM0bonus, "");
@@ -79,9 +82,7 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
         return randomNumber % _modulus;
     }
 
-    function buildImage(
-        string memory _nameC0
-    ) internal view returns (string memory) {
+    function buildImage(uint256 tokenId) internal view returns (string memory) {
         return
             Base64.encode(
                 bytes(
@@ -93,9 +94,11 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
                         '<text dominant-baseline="middle" text-anchor="middle" font-family="Impact" font-size="111" y="34%" x="50%" stroke="#000000" fill="#ffffff">ZERO ARMY</text>',
                         '<text dominant-baseline="middle" text-anchor="middle" font-family="Courier" font-size="55" stroke-width="2" y="50%" x="50%" stroke="#a10000" fill="#ffffff">BRAVO COMPANY</text>',
                         '<text dominant-baseline="middle" text-anchor="middle" font-family="Courier new" font-size="40" stroke-width="2" y="69%" x="50%" stroke="#ffffff" fill="#ffffff">',
-                        _nameC0,
+                        bravoCodeNames[tokenId],
                         "</text>",
-                        '<text dominant-baseline="middle" text-anchor="middle" font-family="Courier new" font-size="22" y="88%" x="50%" fill="#ffffff"> HOLDING THE LINE </text>',
+                        '<text dominant-baseline="middle" text-anchor="middle" font-family="Courier new" font-size="22" y="88%" x="50%" fill="#ffffff"> $AIM0: ',
+                        balanceOf(bravoIDindex[tokenId], 0).toString(),
+                        " Rounds</text>",
                         "</svg>"
                     )
                 )
@@ -121,7 +124,7 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
                                 "Zero Army founding team members. Go to zeroarmy.org for details.",
                                 '", "image":"',
                                 "data:image/svg+xml;base64,",
-                                buildImage(bravoCodeNames[tokenId]),
+                                buildImage(tokenId),
                                 '"}'
                             )
                         )
