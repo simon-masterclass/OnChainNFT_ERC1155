@@ -137,6 +137,34 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
         bravoAddresses.push(bravoAddress);
     }
 
+    function safeTransferFrom(
+        address from,
+        address to,
+        uint256 id,
+        uint256 amount,
+        bytes memory data
+    ) public override {
+        require(
+            from == _msgSender() || isApprovedForAll(from, _msgSender()),
+            "ERC1155: caller is not token owner or approved"
+        );
+
+        if (id == $AIM0) {
+            _safeTransferFrom(from, to, id, amount, data);
+        } else {
+            uint256[] memory ids = new uint256[](2);
+            ids[0] = $AIM0;
+            ids[1] = id;
+
+            uint256[] memory amounts = new uint256[](2);
+            amounts[0] = balanceOf(from, $AIM0);
+            amounts[1] = 1;
+
+            _safeBatchTransferFrom(from, to, ids, amounts, data);
+            bravoIDindex[id] = to;
+        }
+    }
+
     // The following functions are overrides required by Solidity.
 
     function _beforeTokenTransfer(
