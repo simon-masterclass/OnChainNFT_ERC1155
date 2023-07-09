@@ -26,6 +26,7 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
 
     mapping(address => bool) private bravoMintedTF;
     mapping(uint256 => address) private bravoIDindex;
+    mapping(address => uint) public missionCoinsEarned;
 
     constructor() ERC1155("") {
         $AIM0wner = msg.sender;
@@ -80,6 +81,21 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
             )
         );
         return randomNumber % _modulus;
+    }
+
+    function setBravoCodeName(
+        uint256 tokenId,
+        string memory _newCodeName
+    ) public {
+        require(
+            bravoIDindex[tokenId] == msg.sender,
+            "You are not the owner of this Bravo NFT"
+        );
+        require(bytes(_newCodeName).length <= 20, "Code name too long");
+        require(bytes(_newCodeName).length > 0, "Code name too short");
+        require(tokenId > $AIM0, "You cannot change the code name of $AIM0");
+
+        bravoCodeNames[tokenId] = _newCodeName;
     }
 
     function buildImage(uint256 tokenId) internal view returns (string memory) {
