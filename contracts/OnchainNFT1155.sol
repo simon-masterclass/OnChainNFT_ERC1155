@@ -16,7 +16,7 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
     uint256 public constant $AIM0 = 0;
     uint256 public constant $AIM0bonus = 100;
     uint256 public constant max$AIM0supply = 10 ** 6; //max supply of $AIM0 for this Bravo Company collection is 1 million
-    uint256 public minted$AIMO = 0;
+    uint256 public minted$AIM0 = 0;
 
     //Bravo Company NFT variables
     uint256 public constant maxBRAVOsupply = 100;
@@ -30,8 +30,8 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
     constructor() ERC1155("") {
         $AIM0wner = msg.sender;
         //mint Max supply of $AIM0 minus 10000 to be minted by recruits later (for gas efficiency)
-        minted$AIMO = max$AIM0supply - 10000;
-        _mint($AIM0wner, $AIM0, minted$AIMO, "");
+        minted$AIM0 = max$AIM0supply - 10000;
+        _mint($AIM0wner, $AIM0, minted$AIM0, "");
         bravoIDs.push($AIM0);
         bravoCodeNames.push("$AIM0");
         bravoIDindex[$AIM0] = $AIM0wner;
@@ -53,7 +53,7 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
         uint256 newID = bravoIDs.length;
         require(newID <= maxBRAVOsupply, "Max supply of Bravo NFTs reached");
         require(
-            minted$AIMO < max$AIM0supply,
+            minted$AIM0 < max$AIM0supply,
             "Max supply of Bravo $AIM0 reached"
         );
 
@@ -66,7 +66,7 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
 
         //mint 100 rounds of $AIM0 to the new recruit as enlistment bonus
         _mint(msg.sender, $AIM0, $AIM0bonus, "");
-        minted$AIMO += $AIM0bonus;
+        minted$AIM0 += $AIM0bonus;
     }
 
     function randomNum(

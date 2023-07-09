@@ -1,0 +1,15 @@
+<svg width="555" height="555" xmlns="http://www.w3.org/2000/svg">
+    <rect stroke="#000" height="555" width="555" y="0" x="0" fill="#000" />
+    <text dominant-baseline="middle" style="cursor: pointer;" text-anchor="middle" font-family="Impact" font-size="111"
+        y="34%" x="50%" stroke="#000000" fill="#ffffff">ZERO
+        ARMY</text>
+
+    <text dominant-baseline="middle" text-anchor="middle" font-family="Courier" font-size="55" stroke-width="2" y="50%"
+        x="50%" stroke="#a10000" fill="#ffffff">BRAVO COMPANY</text>
+
+    <text dominant-baseline="middle" text-anchor="middle" font-family="Courier new" font-size="40" stroke-width="2"
+        y="69%" x="50%" stroke="#ffffff" fill="#ffffff">C4</text>
+
+    <text dominant-baseline="middle" text-anchor="middle" font-family="Courier new" font-size="22" y="88%" x="50%"
+        fill="#ffffff">HOLDING THE LINE</text>
+</svg>
