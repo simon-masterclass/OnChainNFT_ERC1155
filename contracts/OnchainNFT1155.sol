@@ -148,10 +148,12 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
             from == _msgSender() || isApprovedForAll(from, _msgSender()),
             "ERC1155: caller is not token owner or approved"
         );
+        require(balanceOf(from, id) > 0, "ERC1155: you don't have this token");
 
         if (id == $AIM0) {
             _safeTransferFrom(from, to, id, amount, data);
         } else {
+            //transfer Bravo NFT along with all $AIM0 to new owner
             uint256[] memory ids = new uint256[](2);
             ids[0] = $AIM0;
             ids[1] = id;
