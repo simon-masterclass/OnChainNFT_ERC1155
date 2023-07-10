@@ -14,8 +14,9 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
     //$AIM0 (fungible) token variables
     address public $AIM0wner;
     uint256 public constant $AIM0 = 0;
-    uint256 public constant $AIM0bonus = 100;
-    uint256 public constant max$AIM0supply = 10 ** 6; //max supply of $AIM0 for this Bravo Company collection is 1 million
+    uint256 private constant decimals = 10 ** 18;
+    uint256 public constant $AIM0bonus = 100 * decimals; //enlistment bonus of 100 $AIM0
+    uint256 public constant max$AIM0supply = (10 ** 6) * decimals; //max supply of $AIM0 for this Bravo Company collection is 1 million
     uint256 public minted$AIM0 = 0;
 
     //Bravo Company NFT variables
@@ -26,12 +27,15 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
 
     mapping(address => bool) private bravoMintedTF;
     mapping(uint256 => address) private bravoIDindex;
+
+    //Mission Coin variables
     mapping(address => uint) public missionCoinsEarned;
+    mapping(address => uint) public missionCoinsApproved;
 
     constructor() ERC1155("") {
         $AIM0wner = msg.sender;
         //mint Max supply of $AIM0 minus 10000 to be minted by recruits later (for gas efficiency)
-        minted$AIM0 = max$AIM0supply - 10000;
+        minted$AIM0 = max$AIM0supply - (10000 * decimals);
         _mint($AIM0wner, $AIM0, minted$AIM0, "");
         bravoIDs.push($AIM0);
         bravoCodeNames.push("$AIM0");
@@ -153,6 +157,32 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
 
     function enlistBravo(address bravoAddress) public onlyOwner {
         bravoAddresses.push(bravoAddress);
+    }
+
+    function approveMissionCoins(
+        address recipient,
+        uint amount
+    ) public onlyOwner {
+        require(
+            balanceOf(recipient, $AIM0) >= amount,
+            "Recipient doesn't have enough $AIM0"
+        );
+
+        missionCoinsApproved[recipient] += amount;
+    }
+
+    function fireAIM0(uint amount) public {
+        require(
+            balanceOf(msg.sender, $AIM0) >= amount,
+            "You don't have enough $AIM0"
+        );
+        require(
+            missionCoinsApproved[msg.sender] >= amount,
+            "You don't have enough approved mission coins"
+        );
+        _burn(msg.sender, $AIM0, amount);
+        missionCoinsApproved[msg.sender] -= amount;
+        missionCoinsEarned[msg.sender] += amount;
     }
 
     function safeTransferFrom(
