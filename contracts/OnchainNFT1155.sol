@@ -43,6 +43,8 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
             bravoMintedTF[msg.sender] == false,
             "You have already minted your Bravo NFT"
         );
+        require(bytes(codeName).length <= 20, "Code name too long");
+        require(bytes(codeName).length > 0, "Code name too short");
         bool isEnlisted = false;
         for (uint i = 0; i < bravoAddresses.length; i++) {
             if (bravoAddresses[i] == msg.sender) {
@@ -83,7 +85,7 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
         return randomNumber % _modulus;
     }
 
-    function setBravoCodeName(
+    function changeBravoCodeName(
         uint256 tokenId,
         string memory _newCodeName
     ) public {
@@ -181,6 +183,23 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
             _safeBatchTransferFrom(from, to, ids, amounts, data);
             bravoIDindex[id] = to;
         }
+    }
+
+    function safeBatchTransferFrom(
+        address from,
+        address to,
+        uint256[] memory ids,
+        uint256[] memory amounts,
+        bytes memory data
+    ) public override {
+        //disabled batch transfer for this contract
+        bool disableBatchTransfer = true;
+        require(disableBatchTransfer == false, "Batch transfer disabled");
+        // require(
+        //     from == _msgSender() || isApprovedForAll(from, _msgSender()),
+        //     "ERC1155: caller is not token owner or approved"
+        // );
+        _safeBatchTransferFrom(from, to, ids, amounts, data);
     }
 
     // The following functions are overrides required by Solidity.
