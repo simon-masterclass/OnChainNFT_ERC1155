@@ -87,14 +87,58 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
         bravoCodeNames[tokenId] = _newCodeName;
     }
 
+    function calculateUnits(
+        uint256 tokenId
+    )
+        public
+        view
+        returns (string memory balanceUnit, string memory metricUnitName)
+    {
+        uint balance = 0;
+        string memory returnBalance = "";
+        string memory unitName = "";
+
+        if (tokenId == $AIM0) {
+            balance = totalSupply($AIM0);
+        } else {
+            balance = balanceOf(bravoIDindex[tokenId], $AIM0);
+        }
+        //calculate units
+        if (uint256(balance / (10 ** 18)) > 0) {
+            returnBalance = (balance / (10 ** 18)).toString();
+            unitName = "Rounds";
+        } else if (uint256(balance / (10 ** 16)) > 0) {
+            returnBalance = (balance / (10 ** 16)).toString();
+            unitName = "centi-rounds";
+        } else if (uint256(balance / (10 ** 15)) > 0) {
+            returnBalance = (balance / (10 ** 15)).toString();
+            unitName = "milli-rounds";
+        } else if (uint256(balance / (10 ** 12)) > 0) {
+            returnBalance = (balance / (10 ** 12)).toString();
+            unitName = "micro-rounds";
+        } else if (uint256(balance / (10 ** 9)) > 0) {
+            returnBalance = (balance / (10 ** 9)).toString();
+            unitName = "nano-rounds";
+        } else if (uint256(balance / (10 ** 6)) > 0) {
+            returnBalance = (balance / (10 ** 6)).toString();
+            unitName = "pico-rounds";
+        } else if (uint256(balance / (10 ** 3)) > 0) {
+            returnBalance = (balance / (10 ** 3)).toString();
+            unitName = "femto-rounds";
+        } else {
+            returnBalance = balance.toString();
+            unitName = "atto-rounds";
+        }
+
+        return (returnBalance, unitName);
+    }
+
     function buildImage(uint256 tokenId) internal view returns (string memory) {
         string memory returnBalance = "";
-        if (tokenId == $AIM0) {
-            returnBalance = (totalSupply($AIM0) / (10 ** 9)).toString();
-        } else {
-            returnBalance = (balanceOf(bravoIDindex[tokenId], $AIM0) /
-                (10 ** 9)).toString();
-        }
+        string memory unitName = "";
+
+        (returnBalance, unitName) = calculateUnits(tokenId);
+
         return
             Base64.encode(
                 bytes(
@@ -110,7 +154,9 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
                         "</text>",
                         '<text dominant-baseline="middle" text-anchor="middle" font-family="Courier new" font-size="22" y="88%" x="50%" fill="#ffffff"> $AIM0: ',
                         returnBalance,
-                        " nano-rounds</text>",
+                        " ",
+                        unitName,
+                        "</text>",
                         "</svg>"
                     )
                 )
