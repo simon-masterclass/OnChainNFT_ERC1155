@@ -12,15 +12,15 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
     using Base64 for bytes;
     using Strings for uint256;
     //$AIM0 (fungible) token variables
-    address public $AIM0wner;
+    address public $AIM0wner; //owner of $AIM0 - Probably not needed
     uint256 public constant $AIM0 = 0;
-    uint256 private constant decimals = 10 ** 18;
-    uint256 public constant $AIM0bonus = 100 * decimals; //enlistment bonus of 100 $AIM0
-    uint256 public constant max$AIM0supply = (10 ** 6) * decimals; //max supply of $AIM0 for this Bravo Company collection is 1 million
-    uint256 public minted$AIM0 = 0;
+    uint256 private constant decimals = 10 ** 18; //Probably not needed
+    uint256 public constant $AIM0bonus = 100 * decimals; //enlistment bonus of 100 $AIM0 - Probably not needed
+    uint256 public constant max$AIM0supply = (10 ** 6) * decimals; //max supply of $AIM0 for this Bravo Company collection is 1 million - Probably not needed
+    uint256 public minted$AIM0 = 0; //total $AIM0 minted so far - Probably not needed
 
     //Bravo Company NFT variables
-    uint256 public constant maxBRAVOsupply = 100;
+    uint256 public constant maxBRAVOsupply = 100; //max supply of Bravo NFTs for this Bravo Company collection is 100 - Probably not needed
     uint256[] public bravoIDs;
     address[] public bravoAddresses;
     string[] public bravoCodeNames;
@@ -30,7 +30,8 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
 
     //Mission Coin variables
     mapping(address => uint) public missionCoinsEarned;
-    mapping(address => uint) public missionCoinsApproved;
+
+    // mapping(address => uint) public missionCoinsApproved;
 
     constructor() ERC1155("") {
         $AIM0wner = msg.sender;
@@ -119,7 +120,8 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
                         bravoCodeNames[tokenId],
                         "</text>",
                         '<text dominant-baseline="middle" text-anchor="middle" font-family="Courier new" font-size="22" y="88%" x="50%" fill="#ffffff"> $AIM0: ',
-                        balanceOf(bravoIDindex[tokenId], 0).toString(),
+                        (balanceOf(bravoIDindex[tokenId], 0) / decimals)
+                            .toString(),
                         " Rounds</text>",
                         "</svg>"
                     )
@@ -159,29 +161,29 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
         bravoAddresses.push(bravoAddress);
     }
 
-    function approveMissionCoins(
-        address recipient,
-        uint amount
-    ) public onlyOwner {
-        require(
-            balanceOf(recipient, $AIM0) >= amount,
-            "Recipient doesn't have enough $AIM0"
-        );
+    // function approveMissionCoins(
+    //     address recipient,
+    //     uint amount
+    // ) public onlyOwner {
+    //     require(
+    //         balanceOf(recipient, $AIM0) >= amount,
+    //         "Recipient doesn't have enough $AIM0"
+    //     );
 
-        missionCoinsApproved[recipient] += amount;
-    }
+    //     missionCoinsApproved[recipient] += amount;
+    // }
 
     function fireAIM0(uint amount) public {
         require(
             balanceOf(msg.sender, $AIM0) >= amount,
             "You don't have enough $AIM0"
         );
-        require(
-            missionCoinsApproved[msg.sender] >= amount,
-            "You don't have enough approved mission coins"
-        );
+        // require(
+        //     missionCoinsApproved[msg.sender] >= amount,
+        //     "You don't have enough approved mission coins"
+        // );
         _burn(msg.sender, $AIM0, amount);
-        missionCoinsApproved[msg.sender] -= amount;
+        // missionCoinsApproved[msg.sender] -= amount;
         missionCoinsEarned[msg.sender] += amount;
     }
 
