@@ -14,8 +14,8 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
     using Strings for uint256;
     //$AIM0 (fungible) token variables
     //NOTE: max supply of $AIM0 (fungible) tokens for this Bravo Company collection is 1 million
-    uint256 private constant $AIM0 = 0;
-    uint256 private constant decimals = 10 ** 18; //Probably not needed
+    uint256 private constant $AIM0 = 0; //token ID for $AIM0 (fungible) token
+    uint256 private constant decimals = 10 ** 18; //decimals for $AIM0 & Mission Coins (fungible) token
 
     //Bravo Company NFT variables
     //NOTE: max supply of Bravo NFTs for this Bravo Company collection is 100
@@ -124,9 +124,10 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
                         bytes(
                             abi.encodePacked(
                                 '{"name":"',
-                                "Bravo Company",
+                                "BravoC0 #",
+                                tokenId.toString(),
                                 '", "description":"',
-                                "Zero Army founding team members. Go to zeroarmy.org for details.",
+                                "Bravo Company NFT collection. Zero Army founding team member NFTs - Only 100. Go to zeroarmy.org for details.",
                                 '", "image":"',
                                 "data:image/svg+xml;base64,",
                                 buildImage(tokenId),
