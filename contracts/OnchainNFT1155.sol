@@ -18,7 +18,7 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
     uint256 private constant decimals = 10 ** 18; //decimals for $AIM0 & Mission Coins (fungible) token
 
     //Bravo Company NFT variables
-    //NOTE: max supply of Bravo NFTs for this Bravo Company collection is 100
+    //NOTE: max supply of NFTs for this Bravo Company collection is 100
     uint256[] private bravoIDs;
     string[] public bravoCodeNames;
     mapping(address => bool) private bravoAddressTF;
@@ -26,13 +26,14 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
 
     //Mission Coin variables
     mapping(address => uint) public missionCoinsEarned;
+    bool public burnAIM0TF = false;
 
     constructor() ERC1155("") {
         //mint 1 million rounds of $AIM0 minus 10000 to be minted by recruits later (for gas efficiency)
         uint256 mintAIM0 = ((10 ** 6) * decimals) - (10000 * decimals);
         _mint(owner(), $AIM0, mintAIM0, "");
         bravoIDs.push($AIM0);
-        bravoCodeNames.push("$AIM0");
+        bravoCodeNames.push("Unburned $AIM0 Supply");
         bravoIDindex[$AIM0] = owner();
     }
 
@@ -87,23 +88,29 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
     }
 
     function buildImage(uint256 tokenId) internal view returns (string memory) {
+        string memory returnBalance = "";
+        if (tokenId == $AIM0) {
+            returnBalance = (totalSupply($AIM0) / (10 ** 9)).toString();
+        } else {
+            returnBalance = (balanceOf(bravoIDindex[tokenId], $AIM0) /
+                (10 ** 9)).toString();
+        }
         return
             Base64.encode(
                 bytes(
                     abi.encodePacked(
-                        '<svg width="555" height="555" xmlns="http://www.w3.org/2000/svg">',
-                        '<rect stroke="#000" height="555" width="555" y="0" x="0" fill="hsl(',
+                        '<svg width="777" height="777" xmlns="http://www.w3.org/2000/svg">',
+                        '<rect stroke="#000" height="777" width="777" y="0" x="0" fill="hsl(',
                         randomNum(361, 3, 4).toString(),
                         ',100%,34%)" />',
-                        '<text dominant-baseline="middle" text-anchor="middle" font-family="Impact" font-size="111" y="34%" x="50%" stroke="#000000" fill="#ffffff">ZERO ARMY</text>',
-                        '<text dominant-baseline="middle" text-anchor="middle" font-family="Courier" font-size="55" stroke-width="2" y="50%" x="50%" stroke="#a10000" fill="#ffffff">BRAVO COMPANY</text>',
+                        '<text dominant-baseline="middle" text-anchor="middle" font-family="Impact" font-size="169" y="34%" x="50%" stroke="#000000" fill="#ffffff">ZERO ARMY</text>',
+                        '<text dominant-baseline="middle" text-anchor="middle" font-family="Courier" font-size="69" stroke-width="2" y="50%" x="50%" stroke="#a10000" fill="#ffffff">BRAVO COMPANY</text>',
                         '<text dominant-baseline="middle" text-anchor="middle" font-family="Courier new" font-size="40" stroke-width="2" y="69%" x="50%" stroke="#ffffff" fill="#ffffff">',
                         bravoCodeNames[tokenId],
                         "</text>",
                         '<text dominant-baseline="middle" text-anchor="middle" font-family="Courier new" font-size="22" y="88%" x="50%" fill="#ffffff"> $AIM0: ',
-                        (balanceOf(bravoIDindex[tokenId], $AIM0) / decimals)
-                            .toString(),
-                        " Rounds</text>",
+                        returnBalance,
+                        " nano-rounds</text>",
                         "</svg>"
                     )
                 )
@@ -128,6 +135,8 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
                                 tokenId.toString(),
                                 '", "description":"',
                                 "Bravo Company NFT collection. Zero Army founding team member NFTs - Only 100. Go to zeroarmy.org for details.",
+                                '", "external_url":"',
+                                "https://zeroarmy.org/bravo",
                                 '", "image":"',
                                 "data:image/svg+xml;base64,",
                                 buildImage(tokenId),
@@ -143,7 +152,12 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
         bravoAddressTF[bravoAddress] = true;
     }
 
+    function toggleAIM0burning() public onlyOwner {
+        burnAIM0TF = !burnAIM0TF;
+    }
+
     function fireAIM0(uint amount) public {
+        require(burnAIM0TF == true, "Burning $AIM0 is disabled");
         require(
             balanceOf(msg.sender, $AIM0) >= amount,
             "You don't have enough $AIM0"
