@@ -183,6 +183,7 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
                                 "Bravo Company NFT collection - 100 Zero Army founders series NFTs.",
                                 '", "external_url":"',
                                 "https://zeroarmy.org/bravo",
+                                //'", "attributes":[{"display_type": "number","trait_type":"Rank","value": 0 }]',
                                 '", "image":"',
                                 "data:image/svg+xml;base64,",
                                 buildImage(tokenId),
