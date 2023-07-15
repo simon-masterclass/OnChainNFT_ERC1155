@@ -29,10 +29,11 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
 
     BravoNFT[] public bravoNFT$;
 
-    uint256[] private bravoIDs;
-    string[] public bravoCodeNames;
+    // uint256[] private bravoIDs;
+    // string[] public bravoCodeNames;
+    // mapping(uint256 => address) private bravoIDindex;
+
     mapping(address => bool) private bravoAddressTF;
-    mapping(uint256 => address) private bravoIDindex;
 
     //Mission Coin variables
     mapping(address => uint) public missionCoinsEarned;
@@ -43,6 +44,7 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
         uint256 mintAIM0 = ((10 ** 6) * decimals) - (10000 * decimals);
         _mint(owner(), $AIM0, mintAIM0, "");
 
+        //first BravoNFT is the unburned $AIM0 supply
         BravoNFT memory newBravoNFT = BravoNFT({
             bravOwner: owner(),
             codeName: "Unburned $AIM0 Supply",
@@ -102,13 +104,13 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
         string memory _newCodeName
     ) public {
         require(
-            bravoIDindex[tokenId] == msg.sender,
+            bravoNFT$[tokenId].bravOwner == msg.sender,
             "You are not the owner of this Bravo NFT"
         );
         require(bytes(_newCodeName).length <= 20, "Code name too long");
         require(bytes(_newCodeName).length > 0, "Code name too short");
 
-        bravoCodeNames[tokenId] = _newCodeName;
+        bravoNFT$[tokenId].codeName = _newCodeName;
     }
 
     function calculateUnits(
@@ -116,16 +118,14 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
     )
         public
         view
-        returns (string memory balanceUnit, string memory metricUnitName)
+        returns (string memory returnBalance, string memory unitName)
     {
         uint balance = 0;
-        string memory returnBalance = "";
-        string memory unitName = "";
-
+        //calculate balance
         if (tokenId == $AIM0) {
             balance = totalSupply($AIM0);
         } else {
-            balance = balanceOf(bravoIDindex[tokenId], $AIM0);
+            balance = balanceOf(bravoNFT$[tokenId].bravOwner, $AIM0);
         }
         //calculate units
         if (uint256(balance / (10 ** 18)) > 0) {
@@ -174,7 +174,7 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
                         '<text dominant-baseline="middle" text-anchor="middle" font-family="Impact" font-size="169" y="34%" x="50%" stroke="#000000" fill="#ffffff">ZERO ARMY</text>',
                         '<text dominant-baseline="middle" text-anchor="middle" font-family="Courier" font-size="69" stroke-width="2" y="50%" x="50%" stroke="#a10000" fill="#ffffff">BRAVO COMPANY</text>',
                         '<text dominant-baseline="middle" text-anchor="middle" font-family="Courier new" font-size="40" stroke-width="2" y="69%" x="50%" stroke="#ffffff" fill="#ffffff">',
-                        bravoCodeNames[tokenId],
+                        bravoNFT$[tokenId].codeName,
                         "</text>",
                         '<text dominant-baseline="middle" text-anchor="middle" font-family="Courier new" font-size="22" y="88%" x="50%" fill="#ffffff"> $AIM0: ',
                         returnBalance,
@@ -250,23 +250,20 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
             from == _msgSender() || isApprovedForAll(from, _msgSender()),
             "ERC1155: caller is not token owner or approved"
         );
-        require(balanceOf(from, id) > 0, "ERC1155: you don't have this token");
+        require(id > 0, "ERC1155: $AIM0 is not transferable");
+        require(amount == 1, "ERC1155: Only 1 Bravo NFT can be transferred");
 
-        if (id == $AIM0) {
-            _safeTransferFrom(from, to, id, amount, data);
-        } else {
-            //transfer Bravo NFT along with all $AIM0 to new owner
-            uint256[] memory ids = new uint256[](2);
-            ids[0] = $AIM0;
-            ids[1] = id;
+        //transfer Bravo NFT along with all $AIM0 to new owner
+        uint256[] memory ids = new uint256[](2);
+        ids[0] = $AIM0;
+        ids[1] = id;
 
-            uint256[] memory amounts = new uint256[](2);
-            amounts[0] = balanceOf(from, $AIM0);
-            amounts[1] = 1;
+        uint256[] memory amounts = new uint256[](2);
+        amounts[0] = balanceOf(from, $AIM0);
+        amounts[1] = 1;
 
-            _safeBatchTransferFrom(from, to, ids, amounts, data);
-            bravoIDindex[id] = to;
-        }
+        _safeBatchTransferFrom(from, to, ids, amounts, data);
+        bravoNFT$[id].bravOwner = to;
     }
 
     function safeBatchTransferFrom(
