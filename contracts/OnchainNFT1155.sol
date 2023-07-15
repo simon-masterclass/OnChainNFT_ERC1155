@@ -19,6 +19,16 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
 
     //Bravo Company NFT variables
     //NOTE: max supply of NFTs for this Bravo Company collection is 100
+    struct BravoNFT {
+        address bravOwner;
+        string codeName;
+        uint256 missionCoinsEarned;
+        uint256 rank;
+        uint256 bravoBoost;
+    }
+
+    BravoNFT[] public bravoNFT$;
+
     uint256[] private bravoIDs;
     string[] public bravoCodeNames;
     mapping(address => bool) private bravoAddressTF;
@@ -32,9 +42,16 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
         //mint 1 million rounds of $AIM0 minus 10000 to be minted by recruits later (for gas efficiency)
         uint256 mintAIM0 = ((10 ** 6) * decimals) - (10000 * decimals);
         _mint(owner(), $AIM0, mintAIM0, "");
-        bravoIDs.push($AIM0);
-        bravoCodeNames.push("Unburned $AIM0 Supply");
-        bravoIDindex[$AIM0] = owner();
+
+        BravoNFT memory newBravoNFT = BravoNFT({
+            bravOwner: owner(),
+            codeName: "Unburned $AIM0 Supply",
+            missionCoinsEarned: 0,
+            rank: 0,
+            bravoBoost: 0
+        });
+
+        bravoNFT$.push(newBravoNFT);
     }
 
     function mint(string memory codeName) public {
@@ -44,13 +61,20 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
         );
         require(bytes(codeName).length <= 20, "Code name too long");
         require(bytes(codeName).length > 0, "Code name too short");
-        uint256 newID = bravoIDs.length;
+        uint256 newID = bravoNFT$.length;
         require(newID <= 100, "Max supply of 100 Bravo NFTs reached");
 
         //Bravo NFT variables - add new Bravo NFT to the collection
-        bravoIDs.push(newID);
-        bravoIDindex[newID] = msg.sender;
-        bravoCodeNames.push(codeName);
+        BravoNFT memory newBravoNFT = BravoNFT({
+            bravOwner: msg.sender,
+            codeName: codeName,
+            missionCoinsEarned: 0,
+            rank: 1,
+            bravoBoost: 0
+        });
+
+        bravoNFT$.push(newBravoNFT);
+
         bravoAddressTF[msg.sender] = false;
 
         //mint new NFT for Bravo company recruit with code name
