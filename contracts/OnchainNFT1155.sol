@@ -67,7 +67,7 @@ library BravoLibrary {
         string memory codeName,
         string memory returnBalance,
         string memory unitName
-    ) internal view returns (string memory) {
+    ) public view returns (string memory) {
         return
             Base64.encode(
                 bytes(
@@ -92,14 +92,14 @@ library BravoLibrary {
             );
     }
 
-    function renderMetdata(
+    function renderMetadata(
         string memory tokenId,
         string memory rank,
         string memory bravoBoost,
         string memory codeName,
         string memory returnBalance,
         string memory unitName
-    ) internal view returns (string memory) {
+    ) public view returns (string memory) {
         return
             string(
                 abi.encodePacked(
@@ -138,8 +138,8 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
 
     //$AIM0 (fungible) token variables
     //NOTE: max supply of $AIM0 (fungible) tokens for this Bravo Company collection is 1 million
+    //decimals = 10 ** 18 for $AIM0 & Mission Coins (fungible) token
     uint256 private constant $AIM0 = 0; //token ID for $AIM0 (fungible) token
-    uint256 private constant decimals = 10 ** 18; //decimals for $AIM0 & Mission Coins (fungible) token
 
     //Bravo Company NFT variables & attrtibutes
     //NOTE: max supply of NFTs for this Bravo Company collection is 100
@@ -161,7 +161,7 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
 
     constructor() ERC1155("") {
         //mint 1 million rounds of $AIM0 minus 10000 to be minted by recruits later (for gas efficiency)
-        uint256 mintAIM0 = ((10 ** 6) * decimals) - (10000 * decimals);
+        uint256 mintAIM0 = ((10 ** 6) * (10 ** 18)) - (10000 * (10 ** 18));
         _mint(owner(), $AIM0, mintAIM0, "");
 
         //first BravoNFT is the unburned $AIM0 supply
@@ -203,7 +203,7 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
         _mint(msg.sender, newID, 1, "");
 
         //mint 100 rounds of $AIM0 to the new recruit as enlistment bonus
-        _mint(msg.sender, $AIM0, 100 * decimals, "");
+        _mint(msg.sender, $AIM0, 100 * (10 ** 18), "");
     }
 
     function changeBravoCodeName(
@@ -238,7 +238,7 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
             .calculateUnits(balance);
 
         return
-            BravoLibrary.renderMetdata(
+            BravoLibrary.renderMetadata(
                 tokenId.toString(),
                 bravoNFT$[tokenId].rank.toString(),
                 bravoNFT$[tokenId].bravoBoost.toString(),
