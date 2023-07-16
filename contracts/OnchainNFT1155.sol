@@ -9,15 +9,139 @@ import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "./Base64.sol";
 
-contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
-    using Base64 for bytes;
+library BravoLibrary {
     using Strings for uint256;
+    using Base64 for bytes;
+
+    function calculateUnits(
+        uint balance
+    )
+        public
+        pure
+        returns (string memory returnBalance, string memory unitName)
+    {
+        //calculate units
+        if (uint256(balance / (10 ** 18)) > 0) {
+            returnBalance = (balance / (10 ** 18)).toString();
+            unitName = "Rounds";
+        } else if (uint256(balance / (10 ** 16)) > 0) {
+            returnBalance = (balance / (10 ** 16)).toString();
+            unitName = "centi-rounds";
+        } else if (uint256(balance / (10 ** 15)) > 0) {
+            returnBalance = (balance / (10 ** 15)).toString();
+            unitName = "milli-rounds";
+        } else if (uint256(balance / (10 ** 12)) > 0) {
+            returnBalance = (balance / (10 ** 12)).toString();
+            unitName = "micro-rounds";
+        } else if (uint256(balance / (10 ** 9)) > 0) {
+            returnBalance = (balance / (10 ** 9)).toString();
+            unitName = "nano-rounds";
+        } else if (uint256(balance / (10 ** 6)) > 0) {
+            returnBalance = (balance / (10 ** 6)).toString();
+            unitName = "pico-rounds";
+        } else if (uint256(balance / (10 ** 3)) > 0) {
+            returnBalance = (balance / (10 ** 3)).toString();
+            unitName = "femto-rounds";
+        } else {
+            returnBalance = balance.toString();
+            unitName = "atto-rounds";
+        }
+
+        return (returnBalance, unitName);
+    }
+
+    function randomNum(
+        uint256 _modulus,
+        uint256 _seed,
+        uint256 _salt
+    ) internal view returns (uint256) {
+        uint256 randomNumber = uint256(
+            keccak256(
+                abi.encodePacked(block.timestamp, msg.sender, _salt, _seed)
+            )
+        );
+        return randomNumber % _modulus;
+    }
+
+    function renderSVG(
+        string memory codeName,
+        string memory returnBalance,
+        string memory unitName
+    ) internal view returns (string memory) {
+        return
+            Base64.encode(
+                bytes(
+                    abi.encodePacked(
+                        '<svg width="777" height="777" xmlns="http://www.w3.org/2000/svg">',
+                        '<rect stroke="#000" height="777" width="777" y="0" x="0" fill="hsl(',
+                        randomNum(361, 3, 4).toString(),
+                        ',100%,34%)" />',
+                        '<text dominant-baseline="middle" text-anchor="middle" font-family="Impact" font-size="169" y="34%" x="50%" stroke="#000000" fill="#ffffff">ZERO ARMY</text>',
+                        '<text dominant-baseline="middle" text-anchor="middle" font-family="Courier" font-size="69" stroke-width="2" y="50%" x="50%" stroke="#a10000" fill="#ffffff">BRAVO COMPANY</text>',
+                        '<text dominant-baseline="middle" text-anchor="middle" font-family="Courier new" font-size="40" stroke-width="2" y="69%" x="50%" stroke="#ffffff" fill="#ffffff">',
+                        codeName,
+                        "</text>",
+                        '<text dominant-baseline="middle" text-anchor="middle" font-family="Courier new" font-size="22" y="88%" x="50%" fill="#ffffff"> $AIM0: ',
+                        returnBalance,
+                        " ",
+                        unitName,
+                        "</text>",
+                        "</svg>"
+                    )
+                )
+            );
+    }
+
+    function renderMetdata(
+        string memory tokenId,
+        string memory rank,
+        string memory bravoBoost,
+        string memory codeName,
+        string memory returnBalance,
+        string memory unitName
+    ) internal view returns (string memory) {
+        return
+            string(
+                abi.encodePacked(
+                    "data:application/json;base64,",
+                    Base64.encode(
+                        bytes(
+                            abi.encodePacked(
+                                '{"name":"',
+                                "BravoC0 #",
+                                tokenId,
+                                '", "description":"',
+                                "Bravo Company NFT collection - 100 Zero Army founders series NFTs.",
+                                '", "external_url":"',
+                                "https://zeroarmy.org/bravo",
+                                '", "attributes":[{"trait_type":"Rank","value":',
+                                rank,
+                                "},",
+                                '{"display_type": "boost_number","trait_type":"Bravo Boost","value":',
+                                bravoBoost,
+                                "}]",
+                                '", "image":"',
+                                "data:image/svg+xml;base64,",
+                                renderSVG(codeName, returnBalance, unitName),
+                                '"}'
+                            )
+                        )
+                    )
+                )
+            );
+    }
+}
+
+contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
+    using Strings for uint256;
+    using BravoLibrary for uint256;
+
     //$AIM0 (fungible) token variables
     //NOTE: max supply of $AIM0 (fungible) tokens for this Bravo Company collection is 1 million
     uint256 private constant $AIM0 = 0; //token ID for $AIM0 (fungible) token
     uint256 private constant decimals = 10 ** 18; //decimals for $AIM0 & Mission Coins (fungible) token
 
-    //Bravo Company NFT variables
+    //Bravo Company NFT variables & attrtibutes
     //NOTE: max supply of NFTs for this Bravo Company collection is 100
     struct BravoNFT {
         address bravOwner;
@@ -29,15 +153,11 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
 
     BravoNFT[] public bravoNFT$;
 
-    // uint256[] private bravoIDs;
-    // string[] public bravoCodeNames;
-    // mapping(uint256 => address) private bravoIDindex;
-
+    //enlistment whitelist
     mapping(address => bool) private bravoAddressTF;
 
-    //Mission Coin variables
-    mapping(address => uint) public missionCoinsEarned;
-    bool public burnAIM0TF = false;
+    //enable burning of $AIM0 tokens for mission coins
+    bool public fireAIM0TF = false;
 
     constructor() ERC1155("") {
         //mint 1 million rounds of $AIM0 minus 10000 to be minted by recruits later (for gas efficiency)
@@ -72,7 +192,7 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
             codeName: codeName,
             missionCoinsEarned: 0,
             rank: 1,
-            bravoBoost: 0
+            bravoBoost: 111 + BravoLibrary.randomNum(1000, newID, 34)
         });
 
         bravoNFT$.push(newBravoNFT);
@@ -84,19 +204,6 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
 
         //mint 100 rounds of $AIM0 to the new recruit as enlistment bonus
         _mint(msg.sender, $AIM0, 100 * decimals, "");
-    }
-
-    function randomNum(
-        uint256 _modulus,
-        uint256 _seed,
-        uint256 _salt
-    ) internal view returns (uint256) {
-        uint256 randomNumber = uint256(
-            keccak256(
-                abi.encodePacked(block.timestamp, msg.sender, _salt, _seed)
-            )
-        );
-        return randomNumber % _modulus;
     }
 
     function changeBravoCodeName(
@@ -113,109 +220,31 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
         bravoNFT$[tokenId].codeName = _newCodeName;
     }
 
-    function calculateUnits(
-        uint256 tokenId
-    )
-        public
-        view
-        returns (string memory returnBalance, string memory unitName)
-    {
-        uint balance = 0;
-        //calculate balance
-        if (tokenId == $AIM0) {
-            balance = totalSupply($AIM0);
-        } else {
-            balance = balanceOf(bravoNFT$[tokenId].bravOwner, $AIM0);
-        }
-        //calculate units
-        if (uint256(balance / (10 ** 18)) > 0) {
-            returnBalance = (balance / (10 ** 18)).toString();
-            unitName = "Rounds";
-        } else if (uint256(balance / (10 ** 16)) > 0) {
-            returnBalance = (balance / (10 ** 16)).toString();
-            unitName = "centi-rounds";
-        } else if (uint256(balance / (10 ** 15)) > 0) {
-            returnBalance = (balance / (10 ** 15)).toString();
-            unitName = "milli-rounds";
-        } else if (uint256(balance / (10 ** 12)) > 0) {
-            returnBalance = (balance / (10 ** 12)).toString();
-            unitName = "micro-rounds";
-        } else if (uint256(balance / (10 ** 9)) > 0) {
-            returnBalance = (balance / (10 ** 9)).toString();
-            unitName = "nano-rounds";
-        } else if (uint256(balance / (10 ** 6)) > 0) {
-            returnBalance = (balance / (10 ** 6)).toString();
-            unitName = "pico-rounds";
-        } else if (uint256(balance / (10 ** 3)) > 0) {
-            returnBalance = (balance / (10 ** 3)).toString();
-            unitName = "femto-rounds";
-        } else {
-            returnBalance = balance.toString();
-            unitName = "atto-rounds";
-        }
-
-        return (returnBalance, unitName);
-    }
-
-    function buildImage(uint256 tokenId) internal view returns (string memory) {
-        string memory returnBalance = "";
-        string memory unitName = "";
-
-        (returnBalance, unitName) = calculateUnits(tokenId);
-
-        return
-            Base64.encode(
-                bytes(
-                    abi.encodePacked(
-                        '<svg width="777" height="777" xmlns="http://www.w3.org/2000/svg">',
-                        '<rect stroke="#000" height="777" width="777" y="0" x="0" fill="hsl(',
-                        randomNum(361, 3, 4).toString(),
-                        ',100%,34%)" />',
-                        '<text dominant-baseline="middle" text-anchor="middle" font-family="Impact" font-size="169" y="34%" x="50%" stroke="#000000" fill="#ffffff">ZERO ARMY</text>',
-                        '<text dominant-baseline="middle" text-anchor="middle" font-family="Courier" font-size="69" stroke-width="2" y="50%" x="50%" stroke="#a10000" fill="#ffffff">BRAVO COMPANY</text>',
-                        '<text dominant-baseline="middle" text-anchor="middle" font-family="Courier new" font-size="40" stroke-width="2" y="69%" x="50%" stroke="#ffffff" fill="#ffffff">',
-                        bravoNFT$[tokenId].codeName,
-                        "</text>",
-                        '<text dominant-baseline="middle" text-anchor="middle" font-family="Courier new" font-size="22" y="88%" x="50%" fill="#ffffff"> $AIM0: ',
-                        returnBalance,
-                        " ",
-                        unitName,
-                        "</text>",
-                        "</svg>"
-                    )
-                )
-            );
-    }
-
     function uri(uint256 tokenId) public view override returns (string memory) {
         require(
             exists(tokenId),
             "ERC721Metadata: URI query for nonexistent token"
         );
 
+        //calculate balance
+        uint balance = 0;
+        if (tokenId == $AIM0) {
+            balance = totalSupply($AIM0);
+        } else {
+            balance = balanceOf(bravoNFT$[tokenId].bravOwner, $AIM0);
+        }
+
+        (string memory returnBalance, string memory unitName) = BravoLibrary
+            .calculateUnits(balance);
+
         return
-            string(
-                abi.encodePacked(
-                    "data:application/json;base64,",
-                    Base64.encode(
-                        bytes(
-                            abi.encodePacked(
-                                '{"name":"',
-                                "BravoC0 #",
-                                tokenId.toString(),
-                                '", "description":"',
-                                "Bravo Company NFT collection - 100 Zero Army founders series NFTs.",
-                                '", "external_url":"',
-                                "https://zeroarmy.org/bravo",
-                                //'", "attributes":[{"display_type": "number","trait_type":"Rank","value": 0 }]',
-                                '", "image":"',
-                                "data:image/svg+xml;base64,",
-                                buildImage(tokenId),
-                                '"}'
-                            )
-                        )
-                    )
-                )
+            BravoLibrary.renderMetdata(
+                tokenId.toString(),
+                bravoNFT$[tokenId].rank.toString(),
+                bravoNFT$[tokenId].bravoBoost.toString(),
+                bravoNFT$[tokenId].codeName,
+                returnBalance,
+                unitName
             );
     }
 
@@ -223,12 +252,27 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
         bravoAddressTF[bravoAddress] = true;
     }
 
-    function toggleAIM0burning() public onlyOwner {
-        burnAIM0TF = !burnAIM0TF;
+    function payBravo(
+        uint256 tokenId,
+        uint256 amount,
+        bytes calldata data
+    ) public onlyOwner {
+        //pay Bravo NFT owner $AIM0
+        _safeTransferFrom(
+            msg.sender,
+            bravoNFT$[tokenId].bravOwner,
+            $AIM0,
+            amount,
+            data
+        );
     }
 
-    function fireAIM0(uint amount) public {
-        require(burnAIM0TF == true, "Burning $AIM0 is disabled");
+    function toggleAIM0firing() public onlyOwner {
+        fireAIM0TF = !fireAIM0TF;
+    }
+
+    function fireAIM0(uint256 tokenID, uint256 amount) public {
+        require(fireAIM0TF == true, "firing $AIM0 is disabled");
         require(
             balanceOf(msg.sender, $AIM0) >= amount,
             "You don't have enough $AIM0"
@@ -236,7 +280,7 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
 
         _burn(msg.sender, $AIM0, amount);
         // Mission coins earned after burning - to be minted later when system is fully operational
-        missionCoinsEarned[msg.sender] += amount;
+        bravoNFT$[tokenID].missionCoinsEarned += amount;
     }
 
     function safeTransferFrom(
