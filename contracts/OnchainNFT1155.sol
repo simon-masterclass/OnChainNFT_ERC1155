@@ -157,7 +157,7 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
     mapping(address => bool) private bravoAddressTF;
 
     //enable burning of $AIM0 tokens for mission coins
-    bool public fireAIM0TF = false;
+    bool public fire$AIM0TF = false;
 
     constructor() ERC1155("") {
         //mint 1 million rounds of $AIM0 minus 10000 to be minted by recruits later (for gas efficiency)
@@ -176,7 +176,7 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
         bravoNFT$.push(newBravoNFT);
     }
 
-    function mint(string memory codeName) public {
+    function mint(string memory codeName) public payable {
         require(
             bravoAddressTF[msg.sender] == true,
             "You are not on Bravo NFT mint list"
@@ -191,7 +191,7 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
             bravOwner: msg.sender,
             codeName: codeName,
             missionCoinsEarned: 0,
-            rank: 1,
+            rank: 0,
             bravoBoost: 111 + BravoLibrary.randomNum(1000, newID, 34)
         });
 
@@ -209,7 +209,7 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
     function changeBravoCodeName(
         uint256 tokenId,
         string memory _newCodeName
-    ) public {
+    ) public payable {
         require(
             bravoNFT$[tokenId].bravOwner == msg.sender,
             "You are not the owner of this Bravo NFT"
@@ -248,7 +248,7 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
             );
     }
 
-    function enlistBravo(address bravoAddress) public onlyOwner {
+    function enlistBravo(address bravoAddress) public payable onlyOwner {
         bravoAddressTF[bravoAddress] = true;
     }
 
@@ -256,7 +256,7 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
         uint256 tokenId,
         uint256 amount,
         bytes calldata data
-    ) public onlyOwner {
+    ) public payable onlyOwner {
         //pay Bravo NFT owner $AIM0
         _safeTransferFrom(
             msg.sender,
@@ -267,12 +267,12 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
         );
     }
 
-    function toggleAIM0firing() public onlyOwner {
-        fireAIM0TF = !fireAIM0TF;
+    function toggle$AIM0firing() public payable onlyOwner {
+        fire$AIM0TF = !fire$AIM0TF;
     }
 
-    function fireAIM0(uint256 tokenID, uint256 amount) public {
-        require(fireAIM0TF == true, "firing $AIM0 is disabled");
+    function fire$AIM0(uint256 tokenID, uint256 amount) public payable {
+        require(fire$AIM0TF == true, "firing $AIM0 is disabled");
         require(
             balanceOf(msg.sender, $AIM0) >= amount,
             "You don't have enough $AIM0"
@@ -281,6 +281,10 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
         _burn(msg.sender, $AIM0, amount);
         // Mission coins earned after burning - to be minted later when system is fully operational
         bravoNFT$[tokenID].missionCoinsEarned += amount;
+        //rank up after burning 100 $AIM0
+        bravoNFT$[tokenID].rank = uint256(
+            bravoNFT$[tokenID].missionCoinsEarned / (100 * (10 ** 18))
+        );
     }
 
     function safeTransferFrom(
@@ -325,6 +329,10 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
         //     "ERC1155: caller is not token owner or approved"
         // );
         _safeBatchTransferFrom(from, to, ids, amounts, data);
+    }
+
+    function withdraw() public payable onlyOwner {
+        payable(msg.sender).transfer(address(this).balance);
     }
 
     // The following functions are overrides required by Solidity.
