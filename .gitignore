@@ -12,3 +12,5 @@ artifacts
 Archive/
 *.zip
 *.tar.gz
+.DS_Store
+```

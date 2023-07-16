@@ -1,0 +1,95 @@
+<svg width="777" height="777" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <filter height="200%" width="200%" y="-50%" x="-50%" id="svg_16_blur">
+            <feGaussianBlur stdDeviation="5" />
+        </filter>
+        <filter height="200%" width="200%" y="-50%" x="-50%" id="svg_15_blur">
+            <feGaussianBlur stdDeviation="5" />
+        </filter>
+        <filter height="200%" width="200%" y="-50%" x="-50%" id="svg_8_blur">
+            <feGaussianBlur stdDeviation="1" />
+        </filter>
+        <filter id="svg_21_blur">
+            <feGaussianBlur stdDeviation="1" />
+        </filter>
+        <filter id="svg_20_blur">
+            <feGaussianBlur stdDeviation="1" />
+        </filter>
+        <filter id="svg_6_blur">
+            <feGaussianBlur stdDeviation="1" />
+        </filter>
+        <filter id="svg_9_blur">
+            <feGaussianBlur stdDeviation="2" />
+        </filter>
+        <filter id="svg_19_blur">
+            <feGaussianBlur stdDeviation="1" />
+        </filter>
+        <filter id="svg_18_blur">
+            <feGaussianBlur stdDeviation="1" />
+        </filter>
+        <filter id="svg_5_blur">
+            <feGaussianBlur stdDeviation="1" />
+        </filter>
+        <filter id="svg_3_blur">
+            <feGaussianBlur stdDeviation="1" />
+        </filter>
+        <filter id="svg_4_blur">
+            <feGaussianBlur stdDeviation="1" />
+        </filter>
+        <!-- <filter height="200%" width="200%" y="-50%" x="-50%" id="svg_1_blur">
+            <feGaussianBlur stdDeviation="2" />
+        </filter> -->
+        <filter id="svg_7_blur">
+            <feGaussianBlur stdDeviation="1" />
+        </filter>
+    </defs>
+
+    <rect transform="rotate(-45 388.5 42)" stroke-width="22" id="svg_1" fill="#000" x="0" y="-346.5" width="777"
+        height="777" />
+    <text filter="url(#svg_3_blur)" stroke-width="2" font-weight="bold" id="svg_3" fill="#ffffff" stroke="#7f7f7f"
+        x="388.5" y="136.16" font-size="111" font-family="'Spartan'" text-anchor="middle"
+        dominant-baseline="middle">ZERO ARMY</text>
+    <text filter="url(#svg_4_blur)" id="svg_4" fill="#000000" stroke="#ff0000" x="388.5" y="220.5" stroke-width="2"
+        font-size="64" font-family="'Spartan'" text-anchor="middle" dominant-baseline="middle">BRAVO COMPANY</text>
+
+    <text filter="url(#svg_5_blur)" stroke-dasharray="2,2" font-weight="normal" id="svg_5" fill="#ffffff"
+        stroke="#4c4c4c" x="388.5" y="300.13" stroke-width="2" font-size="40" font-family="'Spartan'"
+        text-anchor="middle" dominant-baseline="middle">Simon G. Ionashku C44</text>
+
+    <!--$AIMO box <path filter="url(#svg_8_blur)" stroke="#000000" stroke-dasharray="2,2" stroke-width="11" id="svg_8"
+        d="m33,654.26314l710.99999,0l0,106.21052l-710.99999,0l0,-106.21052z" opacity="undefined" fill="#000000" /> -->
+    <!-- <rect filter="url(#svg_8_blur)" stroke="#000000" stroke-dasharray="2,2" stroke-width="11" x="34" y="659" width="711"
+        height="100" opacity="50%" fill="#000000" /> -->
+    <rect filter="url(#svg_8_blur)" stroke="#000000" stroke-dasharray="2,2" stroke-width="11" x="34" y="659" width="711"
+        height="100" opacity="50%" fill="#000000" rx="50" ry="50" />
+
+
+
+    <!-- circle <path filter="url(#svg_7_blur)" stroke="#000000" stroke-dasharray="5,2,2,2,2,2" stroke-width="40" id="svg_7"
+        d="m388.50001,623c-71.54696,0 -129.5,-57.95304 -129.5,-129.5c0,-71.54696 57.95304,-129.5 129.5,-129.5c71.54696,0 129.5,57.95304 129.5,129.5c0,71.54696 -57.95304,129.5 -129.5,129.5z"
+        opacity="undefined" fill="#000000" /> -->
+    <circle filter="url(#svg_7_blur)" stroke="#000000" stroke-dasharray="5,2,2,2,2,2" stroke-width="50" id="svg_7"
+        cx="388.5" cy="477" r="134" fill="#000000" />
+
+
+    <text filter="url(#svg_6_blur)" stroke-width="2" stroke="#ffffff" id="svg_6" fill="#000000" x="388.5" y="713.31579"
+        font-size="49" font-family="'Spartan'" text-anchor="middle" dominant-baseline="middle">$AIM0:
+        1000000 Rounds</text>
+    <text filter="url(#svg_9_blur)" xml:space="preserve" font-family="'Spartan'" font-size="111" text-anchor="middle"
+        dominant-baseline="middle" id="svg_9" y="509" x="50%" stroke-width="4" stroke="#ffffff" fill="#000000">2</text>
+    <!-- <path filter="url(#svg_15_blur)" stroke="#000000" id="svg_15"
+            d="m3.5,455l187.10528,0l0,110.21053l-187.10528,0l0,-110.21053z"
+            fill="#000000" /> -->
+    <!-- <path filter="url(#svg_16_blur)" stroke="#000000" id="svg_16"
+            d="m586.39472,455.00001l187.10528,0l0,110.21053l-187.10528,0l0,-110.21053z" opacity="undefined"
+            fill="#000000" /> -->
+    <text filter="url(#svg_18_blur)" xml:space="preserve" text-anchor="start" font-family="'Spartan'" font-size="25"
+        id="svg_18" y="490" x="55" stroke-width="0" stroke="#7f7f7f" fill="#ffffff">RANK:</text>
+    <text filter="url(#svg_19_blur)" xml:space="preserve" text-anchor="start" font-family="'Spartan'" font-size="25"
+        id="svg_19" y="490" x="631.13155" stroke-width="0" stroke="#7f7f7f" fill="#ffffff">BOOST:</text>
+    <text filter="url(#svg_20_blur)" font-weight="bold" xml:space="preserve" text-anchor="start" font-family="'Spartan'"
+        font-size="34" id="svg_20" y="534" x="88" stroke-width="0" stroke="#7f7f7f" fill="#ffffff">1</text>
+    <text filter="url(#svg_21_blur)" font-weight="bold" xml:space="preserve" text-anchor="start" font-family="'Spartan'"
+        font-size="34" id="svg_21" y="534" x="649.02632" stroke-width="0" stroke="#7f7f7f" fill="#ffffff">888</text>
+
+</svg>
