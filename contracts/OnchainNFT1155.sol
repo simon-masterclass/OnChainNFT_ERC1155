@@ -13,6 +13,17 @@ library BravoLibrary {
     using Strings for uint256;
     using Base64 for bytes;
 
+    struct Stack2deep {
+        string tokenId;
+        string rank;
+        string bravoBoost;
+        string codeName;
+        string returnBalance;
+        string unitName;
+        string color;
+        string compColor;
+    }
+
     function calculateUnits(
         uint balance
     )
@@ -23,28 +34,28 @@ library BravoLibrary {
         //calculate units
         if (uint256(balance / (10 ** 18)) > 0) {
             returnBalance = (balance / (10 ** 18)).toString();
-            unitName = "Rounds";
+            unitName = "ROUNDS";
         } else if (uint256(balance / (10 ** 16)) > 0) {
             returnBalance = (balance / (10 ** 16)).toString();
-            unitName = "centi-rounds";
+            unitName = "CENTI-ROUNDS";
         } else if (uint256(balance / (10 ** 15)) > 0) {
             returnBalance = (balance / (10 ** 15)).toString();
-            unitName = "milli-rounds";
+            unitName = "MILLI-ROUNDS";
         } else if (uint256(balance / (10 ** 12)) > 0) {
             returnBalance = (balance / (10 ** 12)).toString();
-            unitName = "micro-rounds";
+            unitName = "MICRO-ROUNDS";
         } else if (uint256(balance / (10 ** 9)) > 0) {
             returnBalance = (balance / (10 ** 9)).toString();
-            unitName = "nano-rounds";
+            unitName = "NANO-ROUNDS";
         } else if (uint256(balance / (10 ** 6)) > 0) {
             returnBalance = (balance / (10 ** 6)).toString();
-            unitName = "pico-rounds";
+            unitName = "PICO-ROUNDS";
         } else if (uint256(balance / (10 ** 3)) > 0) {
             returnBalance = (balance / (10 ** 3)).toString();
-            unitName = "femto-rounds";
+            unitName = "FEMTO-ROUNDS";
         } else {
             returnBalance = balance.toString();
-            unitName = "atto-rounds";
+            unitName = "ATTO-ROUNDS";
         }
 
         return (returnBalance, unitName);
@@ -63,30 +74,83 @@ library BravoLibrary {
         return randomNumber % _modulus;
     }
 
+    function calculateComp(uint compNum) internal pure returns (uint256) {
+        uint256 comp = compNum + 180;
+        if (comp > 360) {
+            comp = comp - 360;
+        }
+        return comp;
+    }
+
+    function renderSVG2(
+        Stack2deep memory stack2deep
+    ) public pure returns (bytes memory) {
+        return
+            abi.encodePacked(
+                '<circle stroke="hsl(',
+                stack2deep.color,
+                ', 69%, 55%)" stroke-dasharray="2,2" stroke-width="7" cx="100" cy="495" r="69" fill="hsl(',
+                stack2deep.compColor,
+                ', 69%, 55%)" opacity="69%" />',
+                '<text text-anchor="start" font-family="futura" font-size="18" y="490" x="74">RANK</text>',
+                '<text font-weight="bold" text-anchor="middle" font-family="futura" font-size="22" y="517" x="100" fill="hsl(',
+                stack2deep.color,
+                ', 69%, 69%)">',
+                stack2deep.rank,
+                "</text>",
+                '<circle stroke="hsl(',
+                stack2deep.color,
+                ', 69%, 55%)" stroke-dasharray="2,2" stroke-width="7" cx="677" cy="495" r="69" fill="hsl(',
+                stack2deep.compColor,
+                ', 69%, 55%)" opacity="69%" />',
+                '<text text-anchor="end" font-family="futura" font-size="18" y="490" x="707">BOOST</text>',
+                '<text font-weight="bold" text-anchor="middle" font-family="futura" font-size="22" y="517" x="679" fill="hsl(',
+                stack2deep.color,
+                ', 69%, 69%)">',
+                stack2deep.bravoBoost,
+                "</text>",
+                '<rect stroke="#000000" stroke-dasharray="2,2,5,7" stroke-width="17" x="34" y="662" width="711" height="100" opacity="88%" fill="#000000" rx="50" ry="50" />',
+                '<text stroke-width="2" stroke="#ffffff" fill="#000000" x="50%" y="713" font-size="49" font-family="courier" text-anchor="middle" dominant-baseline="middle">$AIM0: ',
+                stack2deep.returnBalance,
+                " ",
+                stack2deep.unitName,
+                "</text>",
+                "</svg>"
+            );
+    }
+
     function renderSVG(
-        string memory codeName,
-        string memory returnBalance,
-        string memory unitName
+        Stack2deep memory stack2deep
     ) public view returns (string memory) {
         return
             Base64.encode(
                 bytes(
                     abi.encodePacked(
                         '<svg width="777" height="777" xmlns="http://www.w3.org/2000/svg">',
-                        '<rect stroke="#000" height="777" width="777" y="0" x="0" fill="hsl(',
-                        randomNum(361, 3, 4).toString(),
-                        ',100%,34%)" />',
-                        '<text dominant-baseline="middle" text-anchor="middle" font-family="Impact" font-size="169" y="34%" x="50%" stroke="#000000" fill="#ffffff">ZERO ARMY</text>',
-                        '<text dominant-baseline="middle" text-anchor="middle" font-family="Courier" font-size="69" stroke-width="2" y="50%" x="50%" stroke="#a10000" fill="#ffffff">BRAVO COMPANY</text>',
-                        '<text dominant-baseline="middle" text-anchor="middle" font-family="Courier new" font-size="40" stroke-width="2" y="69%" x="50%" stroke="#ffffff" fill="#ffffff">',
-                        codeName,
+                        '<circle stroke="hsl(',
+                        stack2deep.color,
+                        ', 69%, 55%)" stroke-dasharray="5,2,2,2,2,2" stroke-width="48" cx="388.5" cy="488" r="134" fill="#000000" />',
+                        '<rect transform="rotate(-45 388.5 42)" stroke-width="22" fill="#000" x="0" y="-346.5" width="777" height="777" />',
+                        '<circle stroke="hsl(',
+                        stack2deep.color,
+                        ', 77%, 34%)" stroke-dasharray="5,',
+                        randomNum(69, 1, 1).toString(),
+                        ",",
+                        randomNum(34, 2, 7).toString(),
+                        '" stroke-width="24" cx="388.5" cy="488" r="134" fill="#000000" opacity="69%" />',
+                        '<text fill="#ffffff" x="50%" y="117" font-size="122" font-family="futura" text-anchor="middle" dominant-baseline="middle">ZERO ARMY</text>',
+                        '<text fill="#000000" stroke="hsl(',
+                        stack2deep.color,
+                        ', 69%, 50%)" x="50%" y="222" stroke-width="2" font-size="69" font-family="futura" text-anchor="middle" dominant-baseline="middle">BRAVO COMPANY</text>',
+                        '<text fill="hsl(',
+                        stack2deep.compColor,
+                        ', 69%, 69%)" x="50%" y="288" font-size="42" font-family="futura" text-anchor="middle" dominant-baseline="middle">',
+                        stack2deep.codeName,
                         "</text>",
-                        '<text dominant-baseline="middle" text-anchor="middle" font-family="Courier new" font-size="22" y="88%" x="50%" fill="#ffffff"> $AIM0: ',
-                        returnBalance,
-                        " ",
-                        unitName,
+                        '<text font-family="futura" font-size="111" text-anchor="middle" dominant-baseline="middle" y="500" x="50%" stroke-width="4" stroke="#ffffff" fill="#000000">',
+                        stack2deep.tokenId,
                         "</text>",
-                        "</svg>"
+                        renderSVG2(stack2deep)
                     )
                 )
             );
@@ -100,6 +164,21 @@ library BravoLibrary {
         string memory returnBalance,
         string memory unitName
     ) public view returns (string memory) {
+        uint randNum3 = randomNum(361, 3, 4);
+        string memory color = randNum3.toString();
+        string memory compColor = calculateComp(randNum3).toString();
+
+        Stack2deep memory stack2deep = Stack2deep(
+            tokenId,
+            rank,
+            bravoBoost,
+            codeName,
+            returnBalance,
+            unitName,
+            color,
+            compColor
+        );
+
         return
             string(
                 abi.encodePacked(
@@ -122,7 +201,7 @@ library BravoLibrary {
                                 "}]",
                                 '", "image":"',
                                 "data:image/svg+xml;base64,",
-                                renderSVG(codeName, returnBalance, unitName),
+                                renderSVG(stack2deep),
                                 '"}'
                             )
                         )
