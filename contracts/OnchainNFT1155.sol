@@ -13,13 +13,12 @@ library BravoLibrary {
     using Strings for uint256;
     using Base64 for bytes;
 
+    //struct for cramming all the variables together to avoid stack too deep error
     struct Stack2deep {
         uint256 tokenId;
         string rank;
         string bravoBoost;
         string codeName;
-        string returnBalance;
-        string unitName;
         string color;
         string compColor;
     }
@@ -62,7 +61,7 @@ library BravoLibrary {
         uint256 _modulus,
         uint256 _seed,
         uint256 _salt
-    ) internal view returns (uint256) {
+    ) public view returns (uint256) {
         uint256 randomNumber = uint256(
             keccak256(
                 abi.encodePacked(block.timestamp, msg.sender, _salt, _seed)
@@ -94,6 +93,11 @@ library BravoLibrary {
 
         return
             abi.encodePacked(
+                '<circle stroke="hsl(',
+                stack2deep.color,
+                ', 69%, 55%)" stroke-dasharray="2,2" stroke-width="7" cx="100" cy="495" r="69" fill="hsl(',
+                stack2deep.compColor,
+                ', 69%, 55%)" opacity="69%" />',
                 '<text font-family="futura" font-size="111" text-anchor="middle" dominant-baseline="middle" y="500" x="50%" stroke-width="4" stroke="#ffffff" fill="#000000">',
                 tokenId,
                 "</text>",
@@ -118,18 +122,14 @@ library BravoLibrary {
                 ', 69%, 69%)">',
                 stack2deep.bravoBoost,
                 "</text>",
-                '<rect stroke="#000000" stroke-dasharray="2,2,5,7" stroke-width="17" x="34" y="662" width="711" height="100" opacity="88%" fill="#000000" rx="50" ry="50" />',
-                '<text stroke-width="2" stroke="#ffffff" fill="#000000" x="50%" y="713" font-size="49" font-family="courier" text-anchor="middle" dominant-baseline="middle">$AIM0: ',
-                stack2deep.returnBalance,
-                " ",
-                stack2deep.unitName,
-                "</text>",
                 "</svg>"
             );
     }
 
     function renderSVG(
-        Stack2deep memory stack2deep
+        Stack2deep memory stack2deep,
+        string memory returnBalance,
+        string memory unitName
     ) public view returns (string memory) {
         return
             Base64.encode(
@@ -143,7 +143,7 @@ library BravoLibrary {
                         '<circle stroke="hsl(',
                         stack2deep.color,
                         ', 77%, 34%)" stroke-dasharray="5,',
-                        randomNum(69, 1, 1).toString(),
+                        randomNum(69, 7, 11).toString(),
                         ",",
                         randomNum(34, 2, 7).toString(),
                         '" stroke-width="24" cx="388.5" cy="488" r="134" fill="#000000" opacity="69%" />',
@@ -156,11 +156,14 @@ library BravoLibrary {
                         ', 69%, 69%)" x="50%" y="288" font-size="42" font-family="futura" text-anchor="middle" dominant-baseline="middle">',
                         stack2deep.codeName,
                         "</text>",
-                        '<circle stroke="hsl(',
-                        stack2deep.color,
-                        ', 69%, 55%)" stroke-dasharray="2,2" stroke-width="7" cx="100" cy="495" r="69" fill="hsl(',
-                        stack2deep.compColor,
-                        ', 69%, 55%)" opacity="69%" />',
+                        '<rect stroke="#000000" stroke-dasharray="2,2,',
+                        randomNum(21, 3, 4).toString(),
+                        ',7" stroke-width="17" x="34" y="662" width="711" height="100" opacity="88%" fill="#000000" rx="50" ry="50" />',
+                        '<text stroke-width="2" stroke="#ffffff" fill="#000000" x="50%" y="713" font-size="49" font-family="courier" text-anchor="middle" dominant-baseline="middle">$AIM0: ',
+                        returnBalance,
+                        " ",
+                        unitName,
+                        "</text>",
                         renderSVG2(stack2deep)
                     )
                 )
@@ -184,8 +187,6 @@ library BravoLibrary {
             rank,
             bravoBoost,
             codeName,
-            returnBalance,
-            unitName,
             color,
             compColor
         );
@@ -212,7 +213,7 @@ library BravoLibrary {
                                 "}]",
                                 '", "image":"',
                                 "data:image/svg+xml;base64,",
-                                renderSVG(stack2deep),
+                                renderSVG(stack2deep, returnBalance, unitName),
                                 '"}'
                             )
                         )
@@ -222,13 +223,13 @@ library BravoLibrary {
     }
 }
 
-contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
+contract OnchainBravoNFTs is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
     using Strings for uint256;
     using BravoLibrary for uint256;
 
     //$AIM0 (fungible) token variables
     //NOTE: max supply of $AIM0 (fungible) tokens for this Bravo Company collection is 1 million
-    //decimals = 10 ** 18 for $AIM0 & Mission Coins (fungible) token
+    //decimals = 10 ** 18 for $AIM0 & Mission Coins (fungible) tokens
     uint256 private constant $AIM0 = 0; //token ID for $AIM0 (fungible) token
 
     //Bravo Company NFT variables & attrtibutes
@@ -257,7 +258,7 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
         //first BravoNFT is the unburned $AIM0 supply
         BravoNFT memory newBravoNFT = BravoNFT({
             bravOwner: owner(),
-            codeName: "UNBURNT $AIM0 SUPPLY",
+            codeName: "$AIM0: UNBURNED SUPPLY",
             missionCoinsEarned: 0,
             rank: 0,
             bravoBoost: 0
@@ -361,19 +362,23 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
         fire$AIM0TF = !fire$AIM0TF;
     }
 
-    function fire$AIM0(uint256 tokenID, uint256 amount) public payable {
+    function fire$AIM0(uint256 tokenId, uint256 amount) public payable {
         require(fire$AIM0TF == true, "firing $AIM0 is disabled");
         require(
             balanceOf(msg.sender, $AIM0) >= amount,
             "You don't have enough $AIM0"
         );
+        require(
+            bravoNFT$[tokenId].bravOwner == msg.sender,
+            "You are not the owner of this Bravo NFT"
+        );
 
         _burn(msg.sender, $AIM0, amount);
         // Mission coins earned after burning - to be minted later when system is fully operational
-        bravoNFT$[tokenID].missionCoinsEarned += amount;
+        bravoNFT$[tokenId].missionCoinsEarned += amount;
         //rank up after burning 100 $AIM0
-        bravoNFT$[tokenID].rank = uint256(
-            bravoNFT$[tokenID].missionCoinsEarned / (100 * (10 ** 18))
+        bravoNFT$[tokenId].rank = uint256(
+            bravoNFT$[tokenId].missionCoinsEarned / (100 * (10 ** 18))
         );
     }
 
