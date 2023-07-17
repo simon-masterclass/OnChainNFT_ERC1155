@@ -14,7 +14,7 @@ library BravoLibrary {
     using Base64 for bytes;
 
     struct Stack2deep {
-        string tokenId;
+        uint256 tokenId;
         string rank;
         string bravoBoost;
         string codeName;
@@ -38,9 +38,6 @@ library BravoLibrary {
         } else if (uint256(balance / (10 ** 16)) > 0) {
             returnBalance = (balance / (10 ** 16)).toString();
             unitName = "CENTI-ROUNDS";
-        } else if (uint256(balance / (10 ** 15)) > 0) {
-            returnBalance = (balance / (10 ** 15)).toString();
-            unitName = "MILLI-ROUNDS";
         } else if (uint256(balance / (10 ** 12)) > 0) {
             returnBalance = (balance / (10 ** 12)).toString();
             unitName = "MICRO-ROUNDS";
@@ -85,14 +82,24 @@ library BravoLibrary {
     function renderSVG2(
         Stack2deep memory stack2deep
     ) public pure returns (bytes memory) {
+        string memory boostTxt = "BOOST";
+        string memory rankTxt = "RANK";
+        string memory tokenId = stack2deep.tokenId.toString();
+
+        if (stack2deep.tokenId == 0) {
+            stack2deep.bravoBoost = stack2deep.rank = "";
+            boostTxt = rankTxt = "";
+            tokenId = "O";
+        }
+
         return
             abi.encodePacked(
-                '<circle stroke="hsl(',
-                stack2deep.color,
-                ', 69%, 55%)" stroke-dasharray="2,2" stroke-width="7" cx="100" cy="495" r="69" fill="hsl(',
-                stack2deep.compColor,
-                ', 69%, 55%)" opacity="69%" />',
-                '<text text-anchor="start" font-family="futura" font-size="18" y="490" x="74">RANK</text>',
+                '<text font-family="futura" font-size="111" text-anchor="middle" dominant-baseline="middle" y="500" x="50%" stroke-width="4" stroke="#ffffff" fill="#000000">',
+                tokenId,
+                "</text>",
+                '<text text-anchor="start" font-family="futura" font-size="18" y="490" x="74">',
+                rankTxt,
+                "</text>",
                 '<text font-weight="bold" text-anchor="middle" font-family="futura" font-size="22" y="517" x="100" fill="hsl(',
                 stack2deep.color,
                 ', 69%, 69%)">',
@@ -103,7 +110,9 @@ library BravoLibrary {
                 ', 69%, 55%)" stroke-dasharray="2,2" stroke-width="7" cx="677" cy="495" r="69" fill="hsl(',
                 stack2deep.compColor,
                 ', 69%, 55%)" opacity="69%" />',
-                '<text text-anchor="end" font-family="futura" font-size="18" y="490" x="707">BOOST</text>',
+                '<text text-anchor="end" font-family="futura" font-size="18" y="490" x="707">',
+                boostTxt,
+                "</text>",
                 '<text font-weight="bold" text-anchor="middle" font-family="futura" font-size="22" y="517" x="679" fill="hsl(',
                 stack2deep.color,
                 ', 69%, 69%)">',
@@ -147,9 +156,11 @@ library BravoLibrary {
                         ', 69%, 69%)" x="50%" y="288" font-size="42" font-family="futura" text-anchor="middle" dominant-baseline="middle">',
                         stack2deep.codeName,
                         "</text>",
-                        '<text font-family="futura" font-size="111" text-anchor="middle" dominant-baseline="middle" y="500" x="50%" stroke-width="4" stroke="#ffffff" fill="#000000">',
-                        stack2deep.tokenId,
-                        "</text>",
+                        '<circle stroke="hsl(',
+                        stack2deep.color,
+                        ', 69%, 55%)" stroke-dasharray="2,2" stroke-width="7" cx="100" cy="495" r="69" fill="hsl(',
+                        stack2deep.compColor,
+                        ', 69%, 55%)" opacity="69%" />',
                         renderSVG2(stack2deep)
                     )
                 )
@@ -157,7 +168,7 @@ library BravoLibrary {
     }
 
     function renderMetadata(
-        string memory tokenId,
+        uint256 tokenId,
         string memory rank,
         string memory bravoBoost,
         string memory codeName,
@@ -188,7 +199,7 @@ library BravoLibrary {
                             abi.encodePacked(
                                 '{"name":"',
                                 "BravoC0 #",
-                                tokenId,
+                                tokenId.toString(),
                                 '", "description":"',
                                 "Bravo Company NFT collection - 100 Zero Army founders series NFTs.",
                                 '", "external_url":"',
@@ -246,7 +257,7 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
         //first BravoNFT is the unburned $AIM0 supply
         BravoNFT memory newBravoNFT = BravoNFT({
             bravOwner: owner(),
-            codeName: "Unburned $AIM0 Supply",
+            codeName: "UNBURNT $AIM0 SUPPLY",
             missionCoinsEarned: 0,
             rank: 0,
             bravoBoost: 0
@@ -318,7 +329,7 @@ contract OnchainNFT1155 is ERC1155, ERC1155Burnable, Ownable, ERC1155Supply {
 
         return
             BravoLibrary.renderMetadata(
-                tokenId.toString(),
+                tokenId,
                 bravoNFT$[tokenId].rank.toString(),
                 bravoNFT$[tokenId].bravoBoost.toString(),
                 bravoNFT$[tokenId].codeName,
