@@ -83,40 +83,49 @@ library BravoLibrary {
     }
 
     function renderHelper1(
-        Stack2deep memory stack2deep
-    ) public pure returns (bytes memory) {
-        return abi.encodePacked("</text>");
+        uint256 color1,
+        string memory comp2Color1
+    ) public view returns (bytes memory) {
+        return
+            abi.encodePacked(
+                '<rect transform="rotate(-45 388.5 42)" stroke-width="22" fill="#000" x="0" y="-346.5" width="777" height="777" />',
+                '<circle stroke="hsl(',
+                comp2Color1,
+                ', 77%, 34%)" stroke-dasharray="5,',
+                (color1 % 34).toString(),
+                ",",
+                randomNum(88, 2, 7).toString(),
+                '" stroke-width="24" cx="388.5" cy="488" r="134" fill="#000000" opacity="69%" />',
+                '<text fill="#000000" stroke="hsl(',
+                comp2Color1,
+                ', 69%, 50%)" x="50%" y="222" stroke-width="2" font-size="69" font-family="futura" text-anchor="middle" dominant-baseline="middle">BRAVO COMPANY</text>'
+            );
     }
 
     function renderHelper2(
-        Stack2deep memory stack2deep
+        uint256 tokenId,
+        string memory color1,
+        string memory comp2Color1
     ) public pure returns (bytes memory) {
-        string memory boostTxt = "BOOST";
-        string memory rankTxt = "RANK";
-
-        if (stack2deep.tokenId == 0) {
-            boostTxt = rankTxt = "";
+        if (tokenId == 0) {
+            return "";
+        } else {
+            return
+                abi.encodePacked(
+                    '<circle stroke="hsl(',
+                    comp2Color1,
+                    ', 69%, 55%)" stroke-dasharray="2,2" stroke-width="7" cx="100" cy="495" r="69" fill="hsl(',
+                    color1,
+                    ', 69%, 55%)" opacity="69%" />',
+                    '<text text-anchor="start" font-family="futura" font-size="18" y="490" x="74">RANK</text>',
+                    '<circle stroke="hsl(',
+                    comp2Color1,
+                    ', 69%, 55%)" stroke-dasharray="2,2" stroke-width="7" cx="677" cy="495" r="69" fill="hsl(',
+                    color1,
+                    ', 69%, 55%)" opacity="69%" />',
+                    '<text text-anchor="end" font-family="futura" font-size="18" y="490" x="709">BOOST</text>'
+                );
         }
-
-        return
-            abi.encodePacked(
-                '<circle stroke="hsl(',
-                stack2deep.comp2Color1,
-                ', 69%, 55%)" stroke-dasharray="2,2" stroke-width="7" cx="100" cy="495" r="69" fill="hsl(',
-                stack2deep.color1.toString(),
-                ', 69%, 55%)" opacity="69%" />',
-                '<text text-anchor="start" font-family="futura" font-size="18" y="490" x="74">',
-                rankTxt,
-                "</text>",
-                '<circle stroke="hsl(',
-                stack2deep.comp2Color1,
-                ', 69%, 55%)" stroke-dasharray="2,2" stroke-width="7" cx="677" cy="495" r="69" fill="hsl(',
-                stack2deep.color1.toString(),
-                ', 69%, 55%)" opacity="69%" />',
-                '<text text-anchor="end" font-family="futura" font-size="18" y="490" x="709">',
-                boostTxt,
-                "</text>"
-            );
     }
 
     function renderHelper3(
@@ -147,40 +156,50 @@ library BravoLibrary {
             );
     }
 
+    function renderHelper4(
+        Stack2deep memory stack2deep
+    ) public pure returns (bytes memory) {
+        return
+            abi.encodePacked(
+                '<text fill="hsl(',
+                stack2deep.color1.toString(),
+                ', 69%, 69%)" x="50%" y="288" font-size="42" font-family="futura" text-anchor="middle" dominant-baseline="middle">',
+                stack2deep.codeName,
+                "</text>",
+                '<rect stroke="#000000" stroke-dasharray="2,2,',
+                (stack2deep.color1 % 21).toString(),
+                ',7" stroke-width="17" x="34" y="662" width="711" height="100" opacity="88%" fill="#000000" rx="50" ry="50" />',
+                '<text stroke-width="2" stroke="#ffffff" fill="#000000" x="50%" y="713" font-size="49" font-family="courier" text-anchor="middle" dominant-baseline="middle">$AIM0: ',
+                stack2deep.returnBalance,
+                " ",
+                stack2deep.unitName,
+                "</text>"
+            );
+    }
+
     function renderSVG(
         Stack2deep memory stack2deep
-    ) public pure returns (string memory) {
+    ) public view returns (string memory) {
         return
             Base64.encode(
                 bytes(
                     abi.encodePacked(
                         '<svg width="777" height="777" xmlns="http://www.w3.org/2000/svg">',
-                        // '<circle stroke="hsl(',
-                        // stack2deep.comp2Color1,
-                        // ', 69%, 55%)" stroke-dasharray="5,2,2,2,2,2" stroke-width="48" cx="388.5" cy="488" r="134" fill="#000000" />',
-                        // '<rect transform="rotate(-45 388.5 42)" stroke-width="22" fill="#000" x="0" y="-346.5" width="777" height="777" />',
-                        // '<circle stroke="hsl(',
-                        // stack2deep.comp2Color1,
-                        // ', 77%, 34%)" stroke-dasharray="5,21',
-                        // randomNum(34, 2, 7).toString(),
-                        // '" stroke-width="24" cx="388.5" cy="488" r="134" fill="#000000" opacity="69%" />',
-                        // '<text fill="#ffffff" x="50%" y="117" font-size="122" font-family="futura" text-anchor="middle" dominant-baseline="middle">ZERO ARMY</text>',
-                        // '<text fill="#000000" stroke="hsl(',
-                        // stack2deep.comp2Color1,
-                        // ', 69%, 50%)" x="50%" y="222" stroke-width="2" font-size="69" font-family="futura" text-anchor="middle" dominant-baseline="middle">BRAVO COMPANY</text>',
-                        // '<text fill="hsl(',
-                        // stack2deep.color1.toString(),
-                        // ', 69%, 69%)" x="50%" y="288" font-size="42" font-family="futura" text-anchor="middle" dominant-baseline="middle">',
-                        // stack2deep.codeName,
-                        // "</text>",
-                        // '<rect stroke="#000000" stroke-dasharray="2,2,5,7" stroke-width="17" x="34" y="662" width="711" height="100" opacity="88%" fill="#000000" rx="50" ry="50" />',
-                        '<text stroke-width="2" stroke="#ffffff" fill="#000000" x="50%" y="713" font-size="49" font-family="courier" text-anchor="middle" dominant-baseline="middle">$AIM0: ',
-                        stack2deep.returnBalance,
-                        " ",
-                        stack2deep.unitName,
-                        "</text>",
-                        renderHelper2(stack2deep),
+                        '<text fill="#ffffff" x="50%" y="117" font-size="122" font-family="futura" text-anchor="middle" dominant-baseline="middle">ZERO ARMY</text>',
+                        '<circle stroke="hsl(',
+                        stack2deep.comp2Color1,
+                        ', 69%, 55%)" stroke-dasharray="5,2,2,2,2,2" stroke-width="48" cx="388.5" cy="488" r="134" fill="#000000" />',
+                        renderHelper1(
+                            stack2deep.color1,
+                            stack2deep.comp2Color1
+                        ),
+                        renderHelper2(
+                            stack2deep.tokenId,
+                            stack2deep.color1.toString(),
+                            stack2deep.comp2Color1
+                        ),
                         renderHelper3(stack2deep),
+                        renderHelper4(stack2deep),
                         "</svg>"
                     )
                 )
