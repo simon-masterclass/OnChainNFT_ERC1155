@@ -94,7 +94,7 @@ library BravoLibrary {
                 ', 77%, 34%)" stroke-dasharray="5,',
                 (color1 % 34).toString(),
                 ",",
-                randomNum(88, 2, 7).toString(),
+                randomNum(69, 2, 7).toString(),
                 '" stroke-width="24" cx="388.5" cy="488" r="134" fill="#000000" opacity="69%" />',
                 '<text fill="#000000" stroke="hsl(',
                 comp2Color1,
@@ -108,7 +108,7 @@ library BravoLibrary {
         string memory comp2Color1
     ) public pure returns (bytes memory) {
         if (tokenId == 0) {
-            return "";
+            return abi.encodePacked("");
         } else {
             return
                 abi.encodePacked(
@@ -141,7 +141,7 @@ library BravoLibrary {
         return
             abi.encodePacked(
                 '<text font-family="futura" font-size="111" text-anchor="middle" dominant-baseline="middle" y="500" x="50%" stroke-width="4" stroke="#ffffff" fill="#000000">',
-                stack2deep.tokenId,
+                tokenId,
                 "</text>",
                 '<text font-weight="bold" text-anchor="middle" font-family="futura" font-size="22" y="517" x="100" fill="hsl(',
                 stack2deep.comp2Color1,
@@ -151,8 +151,7 @@ library BravoLibrary {
                 '<text font-weight="bold" text-anchor="middle" font-family="futura" font-size="22" y="517" x="678" fill="hsl(',
                 stack2deep.comp2Color1,
                 ', 69%, 69%)">',
-                stack2deep.bravoBoost,
-                "</text>"
+                stack2deep.bravoBoost
             );
     }
 
@@ -161,6 +160,7 @@ library BravoLibrary {
     ) public pure returns (bytes memory) {
         return
             abi.encodePacked(
+                "</text>",
                 '<text fill="hsl(',
                 stack2deep.color1.toString(),
                 ', 69%, 69%)" x="50%" y="288" font-size="42" font-family="futura" text-anchor="middle" dominant-baseline="middle">',
@@ -185,7 +185,6 @@ library BravoLibrary {
                 bytes(
                     abi.encodePacked(
                         '<svg width="777" height="777" xmlns="http://www.w3.org/2000/svg">',
-                        '<text fill="#ffffff" x="50%" y="117" font-size="122" font-family="futura" text-anchor="middle" dominant-baseline="middle">ZERO ARMY</text>',
                         '<circle stroke="hsl(',
                         stack2deep.comp2Color1,
                         ', 69%, 55%)" stroke-dasharray="5,2,2,2,2,2" stroke-width="48" cx="388.5" cy="488" r="134" fill="#000000" />',
@@ -193,6 +192,7 @@ library BravoLibrary {
                             stack2deep.color1,
                             stack2deep.comp2Color1
                         ),
+                        '<text fill="#ffffff" x="50%" y="117" font-size="122" font-family="futura" text-anchor="middle" dominant-baseline="middle">ZERO ARMY</text>',
                         renderHelper2(
                             stack2deep.tokenId,
                             stack2deep.color1.toString(),
