@@ -7,20 +7,31 @@
 // will compile your contracts, add the Hardhat Runtime Environment's members to the
 // global scope, and execute the script.
 // deploy/01_deploy_library.js
-const { ethers, upgrades } = require("hardhat");
+const { ethers } = require("hardhat");
 
 async function main() {
+  const signers = await ethers.getSigners();
+
   // Deploy the library contract
-  const LibraryContract = await ethers.getContractFactory("BravoLibrary");
-  const libraryContract = await upgrades.deployProxy(LibraryContract);
-  await libraryContract.deployed();
+  const LibraryContract = await hre.ethers.getContractFactory("BravoLibrary", {
+    signer: signers[0],
+  });
+  const libraryContract = await LibraryContract.deploy();
+  
+  // await libraryContract.address
 
   // Deploy the main contract and link the library
-  const MainContract = await ethers.getContractFactory("OnchainBravoNFTs");
-  const mainContract = await upgrades.deployProxy(MainContract, [
-    libraryContract.address,
-  ]);
-  await mainContract.deployed();
+  const MainContract = await hre.ethers.getContractFactory(
+    "OnchainBravoNFTs",
+    { signer: signers[0] },
+    {
+      libraries: {
+        LibraryContract: libraryContract.address,
+      },
+    }
+  );
+  const mainContract = await MainContract.deploy();
+  // await mainContract.address;
 
   console.log("LibraryContract deployed to:", libraryContract.address);
   console.log("MainContract deployed to:", mainContract.address);
