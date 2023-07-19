@@ -19,7 +19,7 @@ pragma solidity ^0.8.9;
 //...............................................................................................................
 /// @author Simon G.Ionashku - find me on github: simon-masterclass
 // This Bravo Company NFT collection is designed to incentives the first 100 volunteers/employees
-// to enlist and claim their NFTs with $AIM0 rewards built in.
+// to enlist and claim their NFTs with $AIM0 rewards built in. Additional $AIM0 payments for work also possible.
 // This ERC-1155 contract is designed to contain both fungible and non-fungible tokens in a novel way
 // Each NFT contains fungible tokens $AIM0 and these fungible $AIM0 tokens are soulbound to the NFT
 // Every time a Bravo Company Commander Zero (AKA: C0) burns thier $AIM0 by using the
