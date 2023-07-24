@@ -1,5 +1,24 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
+//...............................................................................................................
+//..ZZZZZZZZZ...EEEEEEEEE...RRRRR..........OOOOOO..............AAA.......RRRRR........MMM.....MMM...YY......YY...
+//.ZZZZZZZZZZZ.EEEEEEEEEEE.RRRRRRRRRR.....OOOOOOOOO...........AAAAA.....RRRRRRRRRR...MMMMM...MMMMM.YYYYY...YYYY..
+//.ZZZZZZZZZZZ.EEEEEEEEEEE.RRRRRRRRRRR...OOOOOOOOOO...........AAAAA.....RRRRRRRRRRR..MMMMM...MMMMM.YYYYY..YYYYY..
+//.ZZZZZZZZZZZ.EEEEEEEEEEE.RRRRRRRRRRR..OOOOOOOOOOOO.........AAAAAAA....RRRRRRRRRRR..MMMMMM..MMMMM..YYYY..YYYY...
+//......ZZZZZZ.EEEE........RRRR...RRRRR.OOOO....OOOO.........AAAAAAA....RRRR...RRRRR.MMMMMM.MMMMMM..YYYYYYYYYY...
+//.....ZZZZZZ..EEEEEEEEEE..RRRR...RRRRR.OOOO....OOOOO........AAAAAAA....RRRR...RRRRR.MMMMMM.MMMMMM...YYYYYYYY....
+//.....ZZZZZ...EEEEEEEEEE..RRRRRRRRRRR.OOOO......OOOO.......AAAAAAAAA...RRRRRRRRRRR..MMMMMM.MMMMMM...YYYYYYYY....
+//....ZZZZZ....EEEEEEEEEE..RRRRRRRRRRR.OOOO......OOOO.......AAAA.AAAA...RRRRRRRRRRR..MMMMMM.MMMMMM....YYYYYY.....
+//...ZZZZZ.....EEEEEEEEEE..RRRRRRRRRRR.OOOO......OOOO.......AAAAAAAAAA..RRRRRRRRRRR..MMMMMMMMMMMMM.....YYYYY.....
+//..ZZZZZ......EEEE........RRRR..RRRRR..OOOO....OOOOO......AAAAAAAAAAA..RRRR..RRRRR..MMM.MMMMMMMMM.....YYYY......
+//.ZZZZZZ......EEEE........RRRR...RRRR..OOOO....OOOO.......AAAAAAAAAAA..RRRR...RRRR..MMM.MMMMM.MMM.....YYYY......
+//.ZZZZZZZZZZZ.EEEEEEEEEEE.RRRR...RRRR..OOOOOOOOOOOO.......AAAAAAAAAAAA.RRRR...RRRR..MMM.MMMMM.MMM.....YYYY......
+//.ZZZZZZZZZZZ.EEEEEEEEEEE.RRRR...RRRR...OOOOOOOOOO....... AAAA....AAAA.RRRR...RRRR..MMM.MMMMM.MMM.....YYYY......
+//.ZZZZZZZZZZZ.EEEEEEEEEEE.RRRR...RRRRR...OOOOOOOOO....... AAA.....AAAA.RRRR...RRRRR.MMM.MMMMM.MMM.....YYYY......
+//.........................................OOOOOO................................................................
+//...............................................................................................................
+/// @author Simon G.Ionashku - find me on github: simon-masterclass
+
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "./Base64.sol";
 
@@ -79,7 +98,7 @@ library BravoLibrary {
     function renderHelper1(
         uint256 color1,
         string memory comp2Color1
-    ) public view returns (bytes memory) {
+    ) internal view returns (bytes memory) {
         return
             abi.encodePacked(
                 '<rect transform="rotate(-45 388.5 42)" stroke-width="22" fill="#000" x="0" y="-346.5" width="777" height="777" />',
@@ -100,7 +119,7 @@ library BravoLibrary {
         uint256 tokenId,
         string memory color1,
         string memory comp2Color1
-    ) public pure returns (bytes memory) {
+    ) internal pure returns (bytes memory) {
         if (tokenId == 0) {
             return "";
         } else {
@@ -124,7 +143,7 @@ library BravoLibrary {
 
     function renderHelper3(
         Stack2deep memory stack2deep
-    ) public pure returns (bytes memory) {
+    ) internal pure returns (bytes memory) {
         string memory tokenId = stack2deep.tokenId.toString();
 
         if (stack2deep.tokenId == 0) {
@@ -151,7 +170,7 @@ library BravoLibrary {
 
     function renderHelper4(
         Stack2deep memory stack2deep
-    ) public pure returns (bytes memory) {
+    ) internal pure returns (bytes memory) {
         return
             abi.encodePacked(
                 "</text>",
